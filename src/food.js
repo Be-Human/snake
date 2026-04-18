@@ -1,6 +1,4 @@
-import { TILE_COUNT, COLORS } from './constants.js';
-
-export class Food {
+class Food {
   constructor() {
     this.position = { x: 0, y: 0 };
   }

@@ -1,16 +1,18 @@
-export const GRID_SIZE = 20;
-export const TILE_COUNT = 20;
-export const INITIAL_SNAKE_SPEED = 5;
-export const SCORE_INCREMENT = 10;
+const GRID_SIZE = 20;
+const TILE_COUNT = 20;
+const INITIAL_SNAKE_SPEED = 5;
+const SCORE_INCREMENT = 10;
+const SPEED_INCREMENT = 0.5;
+const MAX_SPEED = 15;
 
-export const DIRECTIONS = {
+const DIRECTIONS = {
   UP: { x: 0, y: -1 },
   DOWN: { x: 0, y: 1 },
   LEFT: { x: -1, y: 0 },
   RIGHT: { x: 1, y: 0 }
 };
 
-export const KEY_CODES = {
+const KEY_CODES = {
   ARROW_UP: 38,
   ARROW_DOWN: 40,
   ARROW_LEFT: 37,
@@ -21,7 +23,7 @@ export const KEY_CODES = {
   D: 68
 };
 
-export const COLORS = {
+const COLORS = {
   BACKGROUND: '#1a1a2e',
   GRID: '#16213e',
   SNAKE_HEAD: '#00ff88',

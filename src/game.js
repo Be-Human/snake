@@ -1,8 +1,4 @@
-import { Snake } from './snake.js';
-import { Food } from './food.js';
-import { GRID_SIZE, INITIAL_SNAKE_SPEED, SCORE_INCREMENT, COLORS, TILE_COUNT } from './constants.js';
-
-export class Game {
+class Game {
   constructor(canvas) {
     this.canvas = canvas;
     this.ctx = canvas.getContext('2d');
@@ -69,6 +65,7 @@ export class Game {
     if (this.snake.checkFoodCollision(this.food.position)) {
       this.snake.grow();
       this.score += SCORE_INCREMENT;
+      this.increaseSpeed();
       this.food.generate(this.snake);
       
       if (this.onScoreUpdate) {
@@ -78,6 +75,12 @@ export class Game {
 
     if (this.snake.checkCollision()) {
       this.gameOver();
+    }
+  }
+
+  increaseSpeed() {
+    if (this.gameSpeed < MAX_SPEED) {
+      this.gameSpeed = Math.min(this.gameSpeed + SPEED_INCREMENT, MAX_SPEED);
     }
   }
 
