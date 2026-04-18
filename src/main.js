@@ -76,6 +76,10 @@ document.addEventListener('DOMContentLoaded', () => {
       case KEY_CODES.D:
         direction = DIRECTIONS.RIGHT;
         break;
+      case KEY_CODES.SPACE:
+        e.preventDefault();
+        game.togglePause();
+        return;
     }
 
     if (direction) {

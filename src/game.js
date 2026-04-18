@@ -11,6 +11,7 @@ class Game {
     this.gameSpeed = INITIAL_SNAKE_SPEED;
     this.isGameOver = false;
     this.isPlaying = false;
+    this.isPaused = false;
     
     this.lastRenderTime = 0;
     this.animationFrameId = null;
@@ -26,6 +27,7 @@ class Game {
     this.gameSpeed = INITIAL_SNAKE_SPEED;
     this.isGameOver = false;
     this.isPlaying = false;
+    this.isPaused = false;
     
     this.snake.reset();
     this.generateAllFoods(0);
@@ -85,6 +87,12 @@ class Game {
     );
 
     const secondsSinceLastRender = (currentTime - this.lastRenderTime) / 1000;
+    
+    if (this.isPaused) {
+      this.draw(currentTime);
+      return;
+    }
+    
     if (secondsSinceLastRender < 1 / this.gameSpeed) return;
 
     this.lastRenderTime = currentTime;
@@ -118,6 +126,9 @@ class Game {
     } else if (food.type.effect === 'shrink') {
       this.snake.shrink(food.type.shrinkAmount);
       this.score += food.type.score;
+      if (this.score < 0) {
+        this.score = 0;
+      }
       this.poisonFlashStartTime = currentTime;
     }
     
@@ -145,6 +156,34 @@ class Game {
     this.snake.draw(this.ctx, this.gridSize);
     
     this.drawPoisonFlash(currentTime);
+    
+    if (this.isPaused) {
+      this.drawPauseText();
+    }
+  }
+
+  drawPauseText() {
+    const centerX = this.canvas.width / 2;
+    const centerY = this.canvas.height / 2;
+    
+    this.ctx.save();
+    this.ctx.fillStyle = 'rgba(0, 0, 0, 0.5)';
+    this.ctx.fillRect(0, 0, this.canvas.width, this.canvas.height);
+    
+    this.ctx.font = 'bold 40px Arial';
+    this.ctx.fillStyle = COLORS.TEXT;
+    this.ctx.textAlign = 'center';
+    this.ctx.textBaseline = 'middle';
+    this.ctx.shadowBlur = 10;
+    this.ctx.shadowColor = COLORS.TEXT;
+    
+    this.ctx.fillText('PAUSED', centerX, centerY);
+    
+    this.ctx.font = '16px Arial';
+    this.ctx.shadowBlur = 0;
+    this.ctx.fillText('按空格键继续', centerX, centerY + 50);
+    
+    this.ctx.restore();
   }
 
   drawPoisonFlash(currentTime) {
@@ -200,8 +239,18 @@ class Game {
       this.start();
     }
     
-    if (this.isPlaying) {
+    if (this.isPlaying && !this.isPaused) {
       this.snake.changeDirection(direction);
+    }
+  }
+
+  togglePause() {
+    if (!this.isPlaying || this.isGameOver) {
+      return;
+    }
+    this.isPaused = !this.isPaused;
+    if (!this.isPaused) {
+      this.lastRenderTime = 0;
     }
   }
 
