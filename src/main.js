@@ -1,16 +1,39 @@
-import { Game } from './game.js';
-import { DIRECTIONS, KEY_CODES, GRID_SIZE, TILE_COUNT } from './constants.js';
-
 document.addEventListener('DOMContentLoaded', () => {
   const canvas = document.getElementById('gameCanvas');
   const scoreElement = document.getElementById('score');
+  const highScoreElement = document.getElementById('highScore');
   const gameOverScreen = document.getElementById('gameOverScreen');
   const finalScoreElement = document.getElementById('finalScore');
+  const finalHighScoreElement = document.getElementById('finalHighScore');
   const restartButton = document.getElementById('restartButton');
   const startScreen = document.getElementById('startScreen');
 
   canvas.width = GRID_SIZE * TILE_COUNT;
   canvas.height = GRID_SIZE * TILE_COUNT;
+
+  function getHighScore() {
+    const saved = localStorage.getItem('snakeHighScore');
+    return saved ? parseInt(saved, 10) : 0;
+  }
+
+  function setHighScore(score) {
+    const currentHighScore = getHighScore();
+    if (score > currentHighScore) {
+      localStorage.setItem('snakeHighScore', score.toString());
+      return true;
+    }
+    return false;
+  }
+
+  function updateHighScoreDisplay() {
+    const highScore = getHighScore();
+    highScoreElement.textContent = highScore;
+    if (finalHighScoreElement) {
+      finalHighScoreElement.textContent = highScore;
+    }
+  }
+
+  updateHighScoreDisplay();
 
   const game = new Game(canvas);
 
@@ -19,7 +42,14 @@ document.addEventListener('DOMContentLoaded', () => {
   };
 
   game.onGameOver = (score) => {
+    const isNewHighScore = setHighScore(score);
+    updateHighScoreDisplay();
     finalScoreElement.textContent = score;
+    
+    if (isNewHighScore && finalHighScoreElement) {
+      finalHighScoreElement.textContent = score;
+    }
+    
     gameOverScreen.style.display = 'flex';
   };
 
@@ -64,6 +94,7 @@ document.addEventListener('DOMContentLoaded', () => {
     startScreen.style.display = 'flex';
     game.init();
     game.draw();
+    updateHighScoreDisplay();
   });
 
   startScreen.addEventListener('click', () => {
