@@ -36,7 +36,29 @@ class Food {
     return false;
   }
 
-  draw(ctx, gridSize) {
+  shouldBlink(currentTime) {
+    if (!this.type.lifetime) {
+      return false;
+    }
+    const elapsed = currentTime - this.spawnTime;
+    const remaining = this.type.lifetime - elapsed;
+    return remaining > 0 && remaining <= GOLDEN_FOOD_BLINK_START;
+  }
+
+  isVisible(currentTime) {
+    if (!this.shouldBlink(currentTime)) {
+      return true;
+    }
+    const elapsed = currentTime - this.spawnTime;
+    const blinkPhase = elapsed % (GOLDEN_FOOD_BLINK_INTERVAL * 2);
+    return blinkPhase < GOLDEN_FOOD_BLINK_INTERVAL;
+  }
+
+  draw(ctx, gridSize, currentTime = 0) {
+    if (this.shouldBlink(currentTime) && !this.isVisible(currentTime)) {
+      return;
+    }
+    
     ctx.fillStyle = this.type.color;
     ctx.shadowBlur = 10;
     ctx.shadowColor = this.type.color;

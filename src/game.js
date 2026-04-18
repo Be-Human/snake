@@ -17,6 +17,8 @@ class Game {
     
     this.onScoreUpdate = null;
     this.onGameOver = null;
+    
+    this.poisonFlashStartTime = 0;
   }
 
   init() {
@@ -27,6 +29,8 @@ class Game {
     
     this.snake.reset();
     this.generateAllFoods(0);
+    
+    this.poisonFlashStartTime = 0;
     
     if (this.onScoreUpdate) {
       this.onScoreUpdate(this.score);
@@ -86,7 +90,7 @@ class Game {
     this.lastRenderTime = currentTime;
 
     this.update(currentTime);
-    this.draw();
+    this.draw(currentTime);
   }
 
   update(currentTime) {
@@ -113,6 +117,8 @@ class Game {
       this.increaseSpeed();
     } else if (food.type.effect === 'shrink') {
       this.snake.shrink(food.type.shrinkAmount);
+      this.score += food.type.score;
+      this.poisonFlashStartTime = currentTime;
     }
     
     this.replaceFood(food, currentTime);
@@ -128,15 +134,34 @@ class Game {
     }
   }
 
-  draw() {
+  draw(currentTime = 0) {
     this.ctx.fillStyle = COLORS.BACKGROUND;
     this.ctx.fillRect(0, 0, this.canvas.width, this.canvas.height);
 
     this.drawGrid();
     for (let food of this.foods) {
-      food.draw(this.ctx, this.gridSize);
+      food.draw(this.ctx, this.gridSize, currentTime);
     }
     this.snake.draw(this.ctx, this.gridSize);
+    
+    this.drawPoisonFlash(currentTime);
+  }
+
+  drawPoisonFlash(currentTime) {
+    if (this.poisonFlashStartTime === 0) {
+      return;
+    }
+    
+    const elapsed = currentTime - this.poisonFlashStartTime;
+    if (elapsed >= POISON_FLASH_DURATION) {
+      return;
+    }
+    
+    const flashProgress = elapsed / POISON_FLASH_DURATION;
+    const alpha = 0.3 * (1 - flashProgress);
+    
+    this.ctx.fillStyle = `rgba(255, 0, 0, ${alpha})`;
+    this.ctx.fillRect(0, 0, this.canvas.width, this.canvas.height);
   }
 
   drawGrid() {
