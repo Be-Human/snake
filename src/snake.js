@@ -1,6 +1,4 @@
-import { DIRECTIONS, TILE_COUNT, COLORS } from './constants.js';
-
-export class Snake {
+class Snake {
   constructor() {
     this.reset();
   }
