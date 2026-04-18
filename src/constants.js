@@ -4,6 +4,12 @@ const INITIAL_SNAKE_SPEED = 5;
 const SPEED_INCREMENT = 0.5;
 const MAX_SPEED = 15;
 
+const GOLDEN_FOOD_BLINK_START = 3000;
+const GOLDEN_FOOD_BLINK_INTERVAL = 200;
+const POISON_PENALTY_SCORE = -20;
+const POISON_FLASH_DURATION = 500;
+const POISON_FLASH_COLOR = 'rgba(255, 0, 0, 0.3)';
+
 const FOOD_TYPES = {
   NORMAL: {
     id: 'normal',
@@ -20,7 +26,7 @@ const FOOD_TYPES = {
   },
   POISON: {
     id: 'poison',
-    score: 0,
+    score: POISON_PENALTY_SCORE,
     color: '#9b59b6',
     effect: 'shrink',
     shrinkAmount: 3
