@@ -20,6 +20,7 @@ class Game {
     this.onGameOver = null;
     
     this.poisonFlashStartTime = 0;
+    this.pauseStartTime = 0;
   }
 
   init() {
@@ -249,7 +250,16 @@ class Game {
       return;
     }
     this.isPaused = !this.isPaused;
-    if (!this.isPaused) {
+    
+    const currentTime = performance.now();
+    
+    if (this.isPaused) {
+      this.pauseStartTime = currentTime;
+    } else {
+      const pauseDuration = currentTime - this.pauseStartTime;
+      for (let food of this.foods) {
+        food.addPausedTime(pauseDuration);
+      }
       this.lastRenderTime = 0;
     }
   }
