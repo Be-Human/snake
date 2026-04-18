@@ -36,6 +36,10 @@ class Food {
     return false;
   }
 
+  addPausedTime(amount) {
+    this.spawnTime += amount;
+  }
+
   shouldBlink(currentTime) {
     if (!this.type.lifetime) {
       return false;
