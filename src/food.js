@@ -1,22 +1,45 @@
 class Food {
-  constructor() {
+  constructor(type = FOOD_TYPES.NORMAL) {
     this.position = { x: 0, y: 0 };
+    this.type = type;
+    this.spawnTime = 0;
   }
 
-  generate(snake) {
+  generate(snake, currentTime = 0, existingFoods = []) {
     let validPosition = false;
-    while (!validPosition) {
+    let attempts = 0;
+    while (!validPosition && attempts < 100) {
       this.position.x = Math.floor(Math.random() * TILE_COUNT);
       this.position.y = Math.floor(Math.random() * TILE_COUNT);
       
       validPosition = !snake.checkCollision(this.position);
+      
+      if (validPosition) {
+        for (let food of existingFoods) {
+          if (food !== this && 
+              food.position.x === this.position.x && 
+              food.position.y === this.position.y) {
+            validPosition = false;
+            break;
+          }
+        }
+      }
+      attempts++;
     }
+    this.spawnTime = currentTime;
+  }
+
+  isExpired(currentTime) {
+    if (this.type.lifetime) {
+      return currentTime - this.spawnTime > this.type.lifetime;
+    }
+    return false;
   }
 
   draw(ctx, gridSize) {
-    ctx.fillStyle = COLORS.FOOD;
+    ctx.fillStyle = this.type.color;
     ctx.shadowBlur = 10;
-    ctx.shadowColor = COLORS.FOOD;
+    ctx.shadowColor = this.type.color;
     
     ctx.fillRect(
       this.position.x * gridSize + 1,

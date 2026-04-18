@@ -5,7 +5,7 @@ class Game {
     this.gridSize = GRID_SIZE;
     
     this.snake = new Snake();
-    this.food = new Food();
+    this.foods = [];
     
     this.score = 0;
     this.gameSpeed = INITIAL_SNAKE_SPEED;
@@ -26,10 +26,40 @@ class Game {
     this.isPlaying = false;
     
     this.snake.reset();
-    this.food.generate(this.snake);
+    this.generateAllFoods(0);
     
     if (this.onScoreUpdate) {
       this.onScoreUpdate(this.score);
+    }
+  }
+
+  generateAllFoods(currentTime) {
+    this.foods = [
+      new Food(FOOD_TYPES.NORMAL),
+      new Food(FOOD_TYPES.GOLDEN),
+      new Food(FOOD_TYPES.POISON)
+    ];
+    
+    for (let food of this.foods) {
+      food.generate(this.snake, currentTime, this.foods);
+    }
+  }
+
+  replaceFood(food, currentTime) {
+    const index = this.foods.indexOf(food);
+    if (index !== -1) {
+      const newFood = new Food(food.type);
+      newFood.generate(this.snake, currentTime, this.foods);
+      this.foods[index] = newFood;
+    }
+  }
+
+  checkExpiredFoods(currentTime) {
+    for (let i = this.foods.length - 1; i >= 0; i--) {
+      const food = this.foods[i];
+      if (food.isExpired(currentTime)) {
+        this.replaceFood(food, currentTime);
+      }
     }
   }
 
@@ -55,26 +85,40 @@ class Game {
 
     this.lastRenderTime = currentTime;
 
-    this.update();
+    this.update(currentTime);
     this.draw();
   }
 
-  update() {
+  update(currentTime) {
+    this.checkExpiredFoods(currentTime);
+    
     this.snake.move();
 
-    if (this.snake.checkFoodCollision(this.food.position)) {
-      this.snake.grow();
-      this.score += SCORE_INCREMENT;
-      this.increaseSpeed();
-      this.food.generate(this.snake);
-      
-      if (this.onScoreUpdate) {
-        this.onScoreUpdate(this.score);
+    for (let i = this.foods.length - 1; i >= 0; i--) {
+      const food = this.foods[i];
+      if (this.snake.checkFoodCollision(food.position)) {
+        this.handleFoodCollision(food, currentTime);
       }
     }
 
     if (this.snake.checkCollision()) {
       this.gameOver();
+    }
+  }
+
+  handleFoodCollision(food, currentTime) {
+    if (food.type.effect === 'grow') {
+      this.snake.grow();
+      this.score += food.type.score;
+      this.increaseSpeed();
+    } else if (food.type.effect === 'shrink') {
+      this.snake.shrink(food.type.shrinkAmount);
+    }
+    
+    this.replaceFood(food, currentTime);
+    
+    if (this.onScoreUpdate) {
+      this.onScoreUpdate(this.score);
     }
   }
 
@@ -89,7 +133,9 @@ class Game {
     this.ctx.fillRect(0, 0, this.canvas.width, this.canvas.height);
 
     this.drawGrid();
-    this.food.draw(this.ctx, this.gridSize);
+    for (let food of this.foods) {
+      food.draw(this.ctx, this.gridSize);
+    }
     this.snake.draw(this.ctx, this.gridSize);
   }
 

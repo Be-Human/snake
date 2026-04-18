@@ -48,6 +48,13 @@ class Snake {
     this.growNext = true;
   }
 
+  shrink(amount) {
+    const minLength = 1;
+    for (let i = 0; i < amount && this.body.length > minLength; i++) {
+      this.body.pop();
+    }
+  }
+
   checkCollision(position = null) {
     const pos = position || this.body[0];
     
