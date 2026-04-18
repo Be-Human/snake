@@ -91,9 +91,8 @@ document.addEventListener('DOMContentLoaded', () => {
 
   restartButton.addEventListener('click', () => {
     gameOverScreen.style.display = 'none';
-    startScreen.style.display = 'flex';
-    game.init();
-    game.draw();
+    startScreen.style.display = 'none';
+    game.restart();
     updateHighScoreDisplay();
   });
 
