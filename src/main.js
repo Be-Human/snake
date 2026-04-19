@@ -17,6 +17,13 @@ document.addEventListener('DOMContentLoaded', () => {
   const achievementNameElement = document.getElementById('achievementName');
   const skinButtons = document.querySelectorAll('.skin-button');
   const difficultyButtons = document.querySelectorAll('.difficulty-button');
+  
+  const activePowerupContainer = document.getElementById('activePowerupContainer');
+  const activePowerupIcon = document.getElementById('activePowerupIcon');
+  const activePowerupName = document.getElementById('activePowerupName');
+  const activePowerupTimer = document.getElementById('activePowerupTimer');
+  
+  let powerupTimerInterval = null;
 
   canvas.width = GRID_SIZE * TILE_COUNT;
   canvas.height = GRID_SIZE * TILE_COUNT;
@@ -353,6 +360,43 @@ document.addEventListener('DOMContentLoaded', () => {
     achievementsElement.innerHTML = html;
   }
 
+  function showActivePowerup(powerupType, remainingTime) {
+    activePowerupIcon.textContent = powerupType.icon;
+    activePowerupName.textContent = powerupType.name;
+    activePowerupTimer.textContent = formatTime(remainingTime);
+    activePowerupContainer.style.display = 'flex';
+    
+    if (powerupTimerInterval) {
+      clearInterval(powerupTimerInterval);
+    }
+    
+    powerupTimerInterval = setInterval(() => {
+      const currentTime = performance.now();
+      const remaining = game.getActivePowerupRemainingTime(currentTime);
+      
+      if (remaining <= 0) {
+        clearInterval(powerupTimerInterval);
+        powerupTimerInterval = null;
+        hideActivePowerup();
+      } else {
+        activePowerupTimer.textContent = formatTime(remaining);
+      }
+    }, 100);
+  }
+
+  function hideActivePowerup() {
+    activePowerupContainer.style.display = 'none';
+    if (powerupTimerInterval) {
+      clearInterval(powerupTimerInterval);
+      powerupTimerInterval = null;
+    }
+  }
+
+  function formatTime(ms) {
+    const seconds = Math.ceil(ms / 1000);
+    return `${seconds}s`;
+  }
+
   loadSavedSkin();
   loadSavedDifficulty();
 
@@ -381,6 +425,14 @@ document.addEventListener('DOMContentLoaded', () => {
     }
     
     checkAchievements();
+  };
+
+  game.onPowerupActivated = (powerupType, remainingTime) => {
+    showActivePowerup(powerupType, remainingTime);
+  };
+
+  game.onPowerupDeactivated = () => {
+    hideActivePowerup();
   };
 
   game.onGameOver = (score) => {

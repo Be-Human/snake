@@ -22,9 +22,23 @@ class Game {
     this.onLevelUpdate = null;
     this.onGameOver = null;
     this.onFoodEaten = null;
+    this.onPowerupActivated = null;
+    this.onPowerupDeactivated = null;
     
     this.poisonFlashStartTime = 0;
     this.pauseStartTime = 0;
+    
+    this.powerup = null;
+    this.activePowerup = null;
+    this.powerupEndTime = 0;
+    this.gameStartTime = 0;
+    this.baseGameSpeed = INITIAL_SNAKE_SPEED;
+    
+    this.isClockActive = false;
+    this.isGoldenBodyActive = false;
+    this.isWeaponActive = false;
+    this.isSpeedBoostActive = false;
+    this.keysPressed = {};
   }
 
   init() {
@@ -33,6 +47,7 @@ class Game {
     this.score = 0;
     this.level = 1;
     this.gameSpeed = difficulty.initialSpeed;
+    this.baseGameSpeed = difficulty.initialSpeed;
     this.isGameOver = false;
     this.isPlaying = false;
     this.isPaused = false;
@@ -43,11 +58,25 @@ class Game {
     
     this.poisonFlashStartTime = 0;
     
+    this.powerup = null;
+    this.activePowerup = null;
+    this.powerupEndTime = 0;
+    this.gameStartTime = 0;
+    
+    this.isClockActive = false;
+    this.isGoldenBodyActive = false;
+    this.isWeaponActive = false;
+    this.isSpeedBoostActive = false;
+    this.keysPressed = {};
+    
     if (this.onScoreUpdate) {
       this.onScoreUpdate(this.score);
     }
     if (this.onLevelUpdate) {
       this.onLevelUpdate(this.level);
+    }
+    if (this.onPowerupDeactivated) {
+      this.onPowerupDeactivated();
     }
   }
 
@@ -86,11 +115,114 @@ class Game {
     }
   }
 
+  trySpawnPowerup(currentTime) {
+    if (this.powerup !== null) {
+      return;
+    }
+    
+    const timeSinceStart = currentTime - this.gameStartTime;
+    if (timeSinceStart < POWERUP_INITIAL_DELAY) {
+      return;
+    }
+    
+    if (Math.random() < POWERUP_CHANCE) {
+      const randomType = Powerup.getRandomType();
+      this.powerup = new Powerup(randomType);
+      this.powerup.generate(this.snake, currentTime, this.foods, this.obstacles);
+    }
+  }
+
+  checkExpiredPowerups(currentTime) {
+    if (this.powerup && this.powerup.isExpired(currentTime)) {
+      this.powerup = null;
+    }
+    
+    if (this.activePowerup && currentTime >= this.powerupEndTime) {
+      this.deactivatePowerup();
+    }
+  }
+
+  activatePowerup(powerupType, currentTime) {
+    if (this.activePowerup && this.activePowerup.id === powerupType.id) {
+      this.powerupEndTime = currentTime + powerupType.duration;
+      return;
+    }
+    
+    if (this.activePowerup) {
+      this.deactivatePowerup();
+    }
+    
+    this.activePowerup = powerupType;
+    this.powerupEndTime = currentTime + powerupType.duration;
+    
+    switch (powerupType.id) {
+      case 'clock':
+        this.isClockActive = true;
+        break;
+      case 'goldenBody':
+        this.isGoldenBodyActive = true;
+        break;
+      case 'weapon':
+        this.isWeaponActive = true;
+        break;
+      case 'speed':
+        this.isSpeedBoostActive = true;
+        this.gameSpeed = this.baseGameSpeed * 1.5;
+        break;
+    }
+    
+    if (this.onPowerupActivated) {
+      this.onPowerupActivated(powerupType, this.powerupEndTime - currentTime);
+    }
+  }
+
+  deactivatePowerup() {
+    if (!this.activePowerup) {
+      return;
+    }
+    
+    switch (this.activePowerup.id) {
+      case 'clock':
+        this.isClockActive = false;
+        break;
+      case 'goldenBody':
+        this.isGoldenBodyActive = false;
+        break;
+      case 'weapon':
+        this.isWeaponActive = false;
+        break;
+      case 'speed':
+        this.isSpeedBoostActive = false;
+        this.gameSpeed = this.baseGameSpeed;
+        break;
+    }
+    
+    this.activePowerup = null;
+    this.powerupEndTime = 0;
+    
+    if (this.onPowerupDeactivated) {
+      this.onPowerupDeactivated();
+    }
+  }
+
+  getActivePowerupRemainingTime(currentTime) {
+    if (!this.activePowerup) {
+      return 0;
+    }
+    return Math.max(0, this.powerupEndTime - currentTime);
+  }
+
+  handlePowerupCollision(powerup, currentTime) {
+    this.activatePowerup(powerup.type, currentTime);
+    this.powerup = null;
+  }
+
   start() {
     this.init();
     
     this.isPlaying = true;
     this.lastRenderTime = 0;
+    this.gameStartTime = performance.now();
     this.gameLoop();
   }
 
@@ -108,6 +240,13 @@ class Game {
       return;
     }
     
+    if (this.isClockActive) {
+      this.checkExpiredPowerups(currentTime);
+      this.trySpawnPowerup(currentTime);
+      this.draw(currentTime);
+      return;
+    }
+    
     if (secondsSinceLastRender < 1 / this.gameSpeed) return;
 
     this.lastRenderTime = currentTime;
@@ -118,6 +257,8 @@ class Game {
 
   update(currentTime) {
     this.checkExpiredFoods(currentTime);
+    this.checkExpiredPowerups(currentTime);
+    this.trySpawnPowerup(currentTime);
     
     this.snake.move();
 
@@ -128,7 +269,13 @@ class Game {
       }
     }
 
-    if (this.snake.checkCollision() || this.checkObstacleCollision()) {
+    if (this.powerup && this.snake.checkFoodCollision(this.powerup.position)) {
+      this.handlePowerupCollision(this.powerup, currentTime);
+    }
+
+    const hitObstacle = this.checkObstacleCollision();
+    
+    if (this.snake.checkCollision() || (hitObstacle && !this.isGoldenBodyActive && !this.isWeaponActive)) {
       this.gameOver();
     }
   }
@@ -219,8 +366,13 @@ class Game {
 
   checkObstacleCollision() {
     const head = this.snake.body[0];
-    for (let obstacle of this.obstacles) {
+    for (let i = this.obstacles.length - 1; i >= 0; i--) {
+      const obstacle = this.obstacles[i];
       if (head.x === obstacle.x && head.y === obstacle.y) {
+        if (this.isWeaponActive) {
+          this.obstacles.splice(i, 1);
+          return false;
+        }
         return true;
       }
     }
@@ -235,6 +387,9 @@ class Game {
     this.drawObstacles();
     for (let food of this.foods) {
       food.draw(this.ctx, this.gridSize, currentTime);
+    }
+    if (this.powerup) {
+      this.powerup.draw(this.ctx, this.gridSize, currentTime);
     }
     this.snake.draw(this.ctx, this.gridSize);
     
@@ -336,6 +491,34 @@ class Game {
     
     if (this.isPlaying && !this.isPaused) {
       this.snake.changeDirection(direction);
+      
+      if (this.isClockActive) {
+        const currentTime = performance.now();
+        const secondsSinceLastRender = (currentTime - this.lastRenderTime) / 1000;
+        
+        if (secondsSinceLastRender >= 1 / this.gameSpeed) {
+          this.lastRenderTime = currentTime;
+          
+          this.snake.move();
+          
+          for (let i = this.foods.length - 1; i >= 0; i--) {
+            const food = this.foods[i];
+            if (this.snake.checkFoodCollision(food.position)) {
+              this.handleFoodCollision(food, currentTime);
+            }
+          }
+          
+          if (this.powerup && this.snake.checkFoodCollision(this.powerup.position)) {
+            this.handlePowerupCollision(this.powerup, currentTime);
+          }
+          
+          const hitObstacle = this.checkObstacleCollision();
+          
+          if (this.snake.checkCollision() || (hitObstacle && !this.isGoldenBodyActive && !this.isWeaponActive)) {
+            this.gameOver();
+          }
+        }
+      }
     }
   }
 
@@ -353,6 +536,12 @@ class Game {
       const pauseDuration = currentTime - this.pauseStartTime;
       for (let food of this.foods) {
         food.addPausedTime(pauseDuration);
+      }
+      if (this.powerup) {
+        this.powerup.addPausedTime(pauseDuration);
+      }
+      if (this.activePowerup) {
+        this.powerupEndTime += pauseDuration;
       }
       this.lastRenderTime = 0;
     }

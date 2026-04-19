@@ -24,6 +24,15 @@
           <div><span class="score-label">最高分:</span> <span id="highScore">0</span></div>
         </div>
         
+        <div id="activePowerupContainer" class="powerup-container" style="display: none;">
+          <div class="active-powerup-label">当前道具:</div>
+          <div id="activePowerupInfo" class="active-powerup-info">
+            <span id="activePowerupIcon" class="powerup-icon"></span>
+            <span id="activePowerupName" class="powerup-name"></span>
+            <span id="activePowerupTimer" class="powerup-timer"></span>
+          </div>
+        </div>
+        
         <div class="canvas-wrapper">
           <canvas id="gameCanvas"></canvas>
           
@@ -83,6 +92,38 @@
         <h2 class="achievements-title">成就列表</h2>
         <div id="achievements" class="achievements">
         </div>
+        
+        <h2 class="powerups-title">道具说明</h2>
+        <div id="powerups" class="powerups">
+          <div class="powerup-item">
+            <div class="powerup-icon">⏰</div>
+            <div class="powerup-info">
+              <div class="powerup-name">时钟</div>
+              <div class="powerup-desc">按住方向键才移动，松开停止</div>
+            </div>
+          </div>
+          <div class="powerup-item">
+            <div class="powerup-icon">🛡️</div>
+            <div class="powerup-info">
+              <div class="powerup-name">金身</div>
+              <div class="powerup-desc">可穿透障碍物而不死亡</div>
+            </div>
+          </div>
+          <div class="powerup-item">
+            <div class="powerup-icon">⚔️</div>
+            <div class="powerup-info">
+              <div class="powerup-name">武器</div>
+              <div class="powerup-desc">撞到障碍物时消除该障碍</div>
+            </div>
+          </div>
+          <div class="powerup-item">
+            <div class="powerup-icon">⚡</div>
+            <div class="powerup-info">
+              <div class="powerup-name">加速</div>
+              <div class="powerup-desc">移动速度临时提升50%</div>
+            </div>
+          </div>
+        </div>
       </div>
     </div>
   </div>
@@ -97,6 +138,7 @@
   
   <script src="src/constants.js"></script>
   <script src="src/food.js"></script>
+  <script src="src/powerup.js"></script>
   <script src="src/snake.js"></script>
   <script src="src/game.js"></script>
   <script src="src/main.js"></script>
