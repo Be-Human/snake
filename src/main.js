@@ -23,6 +23,9 @@ document.addEventListener('DOMContentLoaded', () => {
   let currentGameScore = 0;
   let currentGameNormalFoodEaten = 0;
   let gamesPlayed = 0;
+  
+  const achievementNotificationQueue = [];
+  let isShowingAchievementNotification = false;
 
   const ACHIEVEMENTS = [
     {
@@ -173,11 +176,28 @@ document.addEventListener('DOMContentLoaded', () => {
   }
 
   function showAchievementNotification(achievement) {
+    achievementNotificationQueue.push(achievement);
+    processAchievementNotificationQueue();
+  }
+
+  function processAchievementNotificationQueue() {
+    if (isShowingAchievementNotification || achievementNotificationQueue.length === 0) {
+      return;
+    }
+    
+    isShowingAchievementNotification = true;
+    const achievement = achievementNotificationQueue.shift();
+    
     achievementNameElement.textContent = achievement.name;
     achievementNotification.classList.add('show');
     
     setTimeout(() => {
       achievementNotification.classList.remove('show');
+      
+      setTimeout(() => {
+        isShowingAchievementNotification = false;
+        processAchievementNotificationQueue();
+      }, 300);
     }, 3000);
   }
 
