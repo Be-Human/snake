@@ -22,6 +22,7 @@ document.addEventListener('DOMContentLoaded', () => {
   let highlightedRank = null;
   let currentGameScore = 0;
   let currentGameNormalFoodEaten = 0;
+  let currentGameAnyFoodEaten = 0;
   let gamesPlayed = 0;
   
   const achievementNotificationQueue = [];
@@ -33,7 +34,7 @@ document.addEventListener('DOMContentLoaded', () => {
       name: '第一口',
       description: '吃到第一个食物',
       icon: '🍎',
-      checkCondition: (stats) => stats.normalFoodEaten >= 1
+      checkCondition: (stats) => stats.anyFoodEaten >= 1
     },
     {
       id: 'junior_player',
@@ -207,6 +208,7 @@ document.addEventListener('DOMContentLoaded', () => {
       score: game.score,
       level: game.level,
       normalFoodEaten: currentGameNormalFoodEaten,
+      anyFoodEaten: currentGameAnyFoodEaten,
       gamesPlayed: gamesPlayed
     };
     
@@ -266,10 +268,13 @@ document.addEventListener('DOMContentLoaded', () => {
   };
 
   game.onFoodEaten = (foodType) => {
+    currentGameAnyFoodEaten++;
+    
     if (foodType.id === FOOD_TYPES.NORMAL.id) {
       currentGameNormalFoodEaten++;
-      checkAchievements();
     }
+    
+    checkAchievements();
   };
 
   game.onGameOver = (score) => {
@@ -354,6 +359,7 @@ document.addEventListener('DOMContentLoaded', () => {
       if (startScreen.style.display !== 'none') {
         startScreen.style.display = 'none';
         currentGameNormalFoodEaten = 0;
+        currentGameAnyFoodEaten = 0;
       }
       
       game.handleKeyPress(direction);
@@ -368,6 +374,7 @@ document.addEventListener('DOMContentLoaded', () => {
     gameOverScreen.style.display = 'none';
     startScreen.style.display = 'none';
     currentGameNormalFoodEaten = 0;
+    currentGameAnyFoodEaten = 0;
     game.restart();
     updateHighScoreDisplay();
     
@@ -380,6 +387,7 @@ document.addEventListener('DOMContentLoaded', () => {
   startScreen.addEventListener('click', () => {
     startScreen.style.display = 'none';
     currentGameNormalFoodEaten = 0;
+    currentGameAnyFoodEaten = 0;
     game.start();
   });
 });
