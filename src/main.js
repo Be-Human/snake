@@ -50,6 +50,10 @@ document.addEventListener('DOMContentLoaded', () => {
   }
 
   function isInTopFive(score) {
+    if (score <= 0) {
+      return false;
+    }
+    
     const leaderboard = getLeaderboard();
     if (leaderboard.length < 5) {
       return true;
