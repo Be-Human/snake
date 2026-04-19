@@ -15,10 +15,12 @@ document.addEventListener('DOMContentLoaded', () => {
   const achievementsElement = document.getElementById('achievements');
   const achievementNotification = document.getElementById('achievementNotification');
   const achievementNameElement = document.getElementById('achievementName');
+  const skinButtons = document.querySelectorAll('.skin-button');
 
   canvas.width = GRID_SIZE * TILE_COUNT;
   canvas.height = GRID_SIZE * TILE_COUNT;
 
+  let game = null;
   let highlightedRank = null;
   let currentGameScore = 0;
   let currentGameNormalFoodEaten = 0;
@@ -27,6 +29,69 @@ document.addEventListener('DOMContentLoaded', () => {
   
   const achievementNotificationQueue = [];
   let isShowingAchievementNotification = false;
+
+  function hexToRgba(hex, alpha = 1) {
+    const r = parseInt(hex.slice(1, 3), 16);
+    const g = parseInt(hex.slice(3, 5), 16);
+    const b = parseInt(hex.slice(5, 7), 16);
+    return `rgba(${r}, ${g}, ${b}, ${alpha})`;
+  }
+
+  function applySkin(skinId) {
+    if (!setCurrentSkin(skinId)) {
+      return;
+    }
+
+    const skin = getCurrentSkin();
+    const css = skin.css;
+
+    document.documentElement.style.setProperty('--body-bg', css.bodyBg);
+    document.documentElement.style.setProperty('--primary-color', css.primary);
+    document.documentElement.style.setProperty('--text-color', css.text);
+    document.documentElement.style.setProperty('--secondary-text', css.secondary);
+    document.documentElement.style.setProperty('--accent-color', css.accent);
+    document.documentElement.style.setProperty('--overlay-bg', css.overlayBg);
+    document.documentElement.style.setProperty('--card-bg', css.cardBg);
+
+    document.documentElement.style.setProperty('--primary-color-rgba', hexToRgba(css.primary, 0.5));
+    document.documentElement.style.setProperty('--primary-color-rgba-light', hexToRgba(css.primary, 0.3));
+    document.documentElement.style.setProperty('--primary-color-rgba-medium', hexToRgba(css.primary, 0.3));
+    document.documentElement.style.setProperty('--primary-color-rgba-verylight', hexToRgba(css.primary, 0.1));
+    document.documentElement.style.setProperty('--accent-color-rgba', hexToRgba(css.accent, 0.5));
+
+    skinButtons.forEach(btn => {
+      if (btn.dataset.skin === skinId) {
+        btn.classList.add('active');
+      } else {
+        btn.classList.remove('active');
+      }
+    });
+
+    localStorage.setItem('snakeSkin', skinId);
+  }
+
+  function loadSavedSkin() {
+    const savedSkin = localStorage.getItem('snakeSkin');
+    if (savedSkin) {
+      applySkin(savedSkin);
+    } else {
+      applySkin('classic');
+    }
+  }
+
+  function handleSkinChange(skinId) {
+    applySkin(skinId);
+    if (typeof game !== 'undefined' && game) {
+      game.draw();
+    }
+  }
+
+  skinButtons.forEach(button => {
+    button.addEventListener('click', () => {
+      const skinId = button.dataset.skin;
+      handleSkinChange(skinId);
+    });
+  });
 
   const ACHIEVEMENTS = [
     {
@@ -250,12 +315,14 @@ document.addEventListener('DOMContentLoaded', () => {
     achievementsElement.innerHTML = html;
   }
 
+  loadSavedSkin();
+
   updateHighScoreDisplay();
   renderLeaderboard();
   renderAchievements();
   gamesPlayed = getGamesPlayed();
 
-  const game = new Game(canvas);
+  game = new Game(canvas);
 
   game.onScoreUpdate = (score) => {
     scoreElement.textContent = score;

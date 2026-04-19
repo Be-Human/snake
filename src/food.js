@@ -73,9 +73,10 @@ class Food {
       return;
     }
     
-    ctx.fillStyle = this.type.color;
+    const foodColor = getFoodColor(this.type.id);
+    ctx.fillStyle = foodColor;
     ctx.shadowBlur = 10;
-    ctx.shadowColor = this.type.color;
+    ctx.shadowColor = foodColor;
     
     ctx.fillRect(
       this.position.x * gridSize + 1,
