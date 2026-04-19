@@ -8,31 +8,51 @@
 </head>
 <body>
   <div class="game-container">
-    <h1 class="game-title">贪吃蛇</h1>
-    
-    <div class="score-container">
-      <div><span class="score-label">得分:</span> <span id="score">0</span></div>
-      <div><span class="score-label">最高分:</span> <span id="highScore">0</span></div>
-    </div>
-    
-    <div class="canvas-wrapper">
-      <canvas id="gameCanvas"></canvas>
-      
-      <div id="startScreen" class="overlay">
-        <h2 class="overlay-title">准备开始</h2>
-        <p class="overlay-subtitle">点击或按任意方向键开始游戏</p>
-        <p class="instructions">
-          操作方式：<br>
-          <kbd>↑</kbd> <kbd>↓</kbd> <kbd>←</kbd> <kbd>→</kbd> 或 <kbd>W</kbd> <kbd>A</kbd> <kbd>S</kbd> <kbd>D</kbd> 控制方向<br>
-          吃到食物得分，速度逐渐加快，撞墙或撞自己游戏结束
-        </p>
+    <div class="main-content">
+      <div class="game-section">
+        <h1 class="game-title">贪吃蛇</h1>
+        
+        <div class="score-container">
+          <div><span class="score-label">得分:</span> <span id="score">0</span></div>
+          <div><span class="score-label">最高分:</span> <span id="highScore">0</span></div>
+        </div>
+        
+        <div class="canvas-wrapper">
+          <canvas id="gameCanvas"></canvas>
+          
+          <div id="startScreen" class="overlay">
+            <h2 class="overlay-title">准备开始</h2>
+            <p class="overlay-subtitle">点击或按任意方向键开始游戏</p>
+            <p class="instructions">
+              操作方式：<br>
+              <kbd>↑</kbd> <kbd>↓</kbd> <kbd>←</kbd> <kbd>→</kbd> 或 <kbd>W</kbd> <kbd>A</kbd> <kbd>S</kbd> <kbd>D</kbd> 控制方向<br>
+              吃到食物得分，速度逐渐加快，撞墙或撞自己游戏结束
+            </p>
+          </div>
+          
+          <div id="gameOverScreen" class="overlay">
+            <h2 class="overlay-title">游戏结束</h2>
+            <p class="final-score">最终得分: <span id="finalScore">0</span></p>
+            <p class="final-score">最高分: <span id="finalHighScore">0</span></p>
+            
+            <div id="nameInputSection" class="name-input-section" style="display: none;">
+              <p class="congratulations-text">恭喜！你进入了排行榜前5名！</p>
+              <div class="input-wrapper">
+                <input type="text" id="playerName" placeholder="请输入你的昵称（最多10个字符）" maxlength="10" class="name-input">
+                <button id="submitNameButton" class="button small-button">确认</button>
+              </div>
+            </div>
+            
+            <button id="restartButton" class="button">重新开始</button>
+          </div>
+        </div>
       </div>
       
-      <div id="gameOverScreen" class="overlay">
-        <h2 class="overlay-title">游戏结束</h2>
-        <p class="final-score">最终得分: <span id="finalScore">0</span></p>
-        <p class="final-score">最高分: <span id="finalHighScore">0</span></p>
-        <button id="restartButton" class="button">重新开始</button>
+      <div class="leaderboard-section">
+        <h2 class="leaderboard-title">排行榜</h2>
+        <div id="leaderboard" class="leaderboard">
+          <div class="leaderboard-placeholder">暂无记录</div>
+        </div>
       </div>
     </div>
   </div>
