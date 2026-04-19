@@ -10,6 +10,43 @@ const POISON_PENALTY_SCORE = -20;
 const POISON_FLASH_DURATION = 500;
 const POISON_FLASH_COLOR = 'rgba(255, 0, 0, 0.3)';
 
+const POWERUP_CHANCE = 0.01;
+const POWERUP_INITIAL_DELAY = 10000;
+const POWERUP_LIFETIME = 15000;
+const POWERUP_BLINK_START = 5000;
+const POWERUP_BLINK_INTERVAL = 300;
+
+const POWERUP_TYPES = {
+  CLOCK: {
+    id: 'clock',
+    name: '时钟',
+    description: '按住方向键才移动，松开停止',
+    icon: '⏰',
+    duration: 10000
+  },
+  GOLDEN_BODY: {
+    id: 'goldenBody',
+    name: '金身',
+    description: '可穿透障碍物而不死亡',
+    icon: '🛡️',
+    duration: 8000
+  },
+  WEAPON: {
+    id: 'weapon',
+    name: '武器',
+    description: '撞到障碍物时消除该障碍',
+    icon: '⚔️',
+    duration: 12000
+  },
+  SPEED: {
+    id: 'speed',
+    name: '加速',
+    description: '移动速度临时提升50%',
+    icon: '⚡',
+    duration: 8000
+  }
+};
+
 const FOOD_TYPES = {
   NORMAL: {
     id: 'normal',
@@ -120,6 +157,12 @@ const SKINS = {
       NORMAL: '#ff6b6b',
       GOLDEN: '#ffd700',
       POISON: '#9b59b6'
+    },
+    powerupColors: {
+      CLOCK: '#3498db',
+      GOLDEN_BODY: '#f39c12',
+      WEAPON: '#e74c3c',
+      SPEED: '#2ecc71'
     }
   },
   NEON: {
@@ -147,6 +190,12 @@ const SKINS = {
       NORMAL: '#ff69b4',
       GOLDEN: '#ffff00',
       POISON: '#ff00ff'
+    },
+    powerupColors: {
+      CLOCK: '#00bfff',
+      GOLDEN_BODY: '#ffa500',
+      WEAPON: '#ff6347',
+      SPEED: '#32cd32'
     }
   },
   MINIMAL: {
@@ -174,6 +223,12 @@ const SKINS = {
       NORMAL: '#dc3545',
       GOLDEN: '#ffc107',
       POISON: '#6f42c1'
+    },
+    powerupColors: {
+      CLOCK: '#0066cc',
+      GOLDEN_BODY: '#cc8800',
+      WEAPON: '#cc3300',
+      SPEED: '#28a745'
     }
   }
 };
@@ -203,6 +258,12 @@ function getFoodColor(foodTypeId) {
   const skin = getCurrentSkin();
   const typeKey = foodTypeId.toUpperCase();
   return skin.foodColors[typeKey] || FOOD_TYPES[typeKey]?.color || '#ff6b6b';
+}
+
+function getPowerupColor(powerupTypeId) {
+  const skin = getCurrentSkin();
+  const typeKey = powerupTypeId.toUpperCase().replace('_', '_');
+  return skin.powerupColors[typeKey] || '#ffffff';
 }
 
 const COLORS = {

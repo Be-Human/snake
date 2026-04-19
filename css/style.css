@@ -541,3 +541,104 @@ body {
   font-weight: bold;
   color: #000;
 }
+
+.powerup-container {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  padding: 10px 20px;
+  background-color: var(--card-bg);
+  border: 2px solid var(--primary-color);
+  border-radius: 10px;
+  box-shadow: 0 0 15px var(--primary-color-rgba-light, rgba(0, 255, 136, 0.3));
+}
+
+.active-powerup-label {
+  font-size: 1rem;
+  font-weight: bold;
+  color: var(--primary-color);
+}
+
+.active-powerup-info {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.active-powerup-info .powerup-icon {
+  font-size: 1.5rem;
+}
+
+.active-powerup-info .powerup-name {
+  font-size: 1rem;
+  font-weight: bold;
+  color: var(--text-color);
+}
+
+.active-powerup-info .powerup-timer {
+  font-size: 1rem;
+  font-weight: bold;
+  color: var(--accent-color);
+  min-width: 30px;
+  text-align: center;
+}
+
+.powerups-title {
+  font-size: 1.8rem;
+  font-weight: bold;
+  color: var(--accent-color);
+  text-shadow: 0 0 10px var(--accent-color-rgba, rgba(255, 107, 107, 0.5));
+  margin: 0;
+  margin-top: 20px;
+}
+
+.powerups {
+  width: 250px;
+  border: 3px solid var(--accent-color);
+  border-radius: 10px;
+  box-shadow: 0 0 20px var(--accent-color-rgba, rgba(255, 107, 107, 0.3));
+  padding: 15px;
+  background-color: var(--card-bg);
+}
+
+.powerup-item {
+  display: flex;
+  align-items: center;
+  padding: 10px 15px;
+  margin-bottom: 8px;
+  border-radius: 8px;
+  background-color: var(--accent-color-rgba-light, rgba(255, 107, 107, 0.1));
+  border: 2px solid var(--accent-color-rgba-light, rgba(255, 107, 107, 0.3));
+  transition: all 0.3s ease;
+}
+
+.powerup-item:last-child {
+  margin-bottom: 0;
+}
+
+.powerup-item:hover {
+  background-color: var(--accent-color-rgba, rgba(255, 107, 107, 0.2));
+  box-shadow: 0 0 10px var(--accent-color-rgba-light, rgba(255, 107, 107, 0.3));
+}
+
+.powerup-item .powerup-icon {
+  font-size: 1.5rem;
+  margin-right: 10px;
+}
+
+.powerup-item .powerup-info {
+  flex: 1;
+}
+
+.powerup-item .powerup-name {
+  font-size: 1rem;
+  font-weight: bold;
+  color: var(--accent-color);
+  margin-bottom: 2px;
+}
+
+.powerup-item .powerup-desc {
+  font-size: 0.8rem;
+  color: var(--secondary-text);
+}
