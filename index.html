@@ -29,7 +29,26 @@
           
           <div id="startScreen" class="overlay">
             <h2 class="overlay-title">准备开始</h2>
-            <p class="overlay-subtitle">点击或按任意方向键开始游戏</p>
+            <p class="overlay-subtitle">选择难度后点击或按任意方向键开始游戏</p>
+            
+            <div class="difficulty-selector">
+              <div class="difficulty-label">选择难度：</div>
+              <div class="difficulty-buttons">
+                <button class="difficulty-button" data-difficulty="easy">
+                  <div class="difficulty-name">简单</div>
+                  <div class="difficulty-desc">慢速 · 少障碍 · 无毒药</div>
+                </button>
+                <button class="difficulty-button active" data-difficulty="normal">
+                  <div class="difficulty-name">普通</div>
+                  <div class="difficulty-desc">中速 · 中等障碍 · 有毒药</div>
+                </button>
+                <button class="difficulty-button" data-difficulty="hard">
+                  <div class="difficulty-name">困难</div>
+                  <div class="difficulty-desc">快速 · 多障碍 · 有毒药</div>
+                </button>
+              </div>
+            </div>
+            
             <p class="instructions">
               操作方式：<br>
               <kbd>↑</kbd> <kbd>↓</kbd> <kbd>←</kbd> <kbd>→</kbd> 或 <kbd>W</kbd> <kbd>A</kbd> <kbd>S</kbd> <kbd>D</kbd> 控制方向<br>
