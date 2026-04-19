@@ -21,6 +21,7 @@ class Game {
     this.onScoreUpdate = null;
     this.onLevelUpdate = null;
     this.onGameOver = null;
+    this.onFoodEaten = null;
     
     this.poisonFlashStartTime = 0;
     this.pauseStartTime = 0;
@@ -146,6 +147,10 @@ class Game {
     
     if (this.onScoreUpdate) {
       this.onScoreUpdate(this.score);
+    }
+    
+    if (this.onFoodEaten) {
+      this.onFoodEaten(food.type);
     }
   }
 
