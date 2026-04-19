@@ -87,9 +87,7 @@ class Game {
   }
 
   start() {
-    if (this.isGameOver) {
-      this.init();
-    }
+    this.init();
     
     this.isPlaying = true;
     this.lastRenderTime = 0;
@@ -361,7 +359,6 @@ class Game {
   }
 
   restart() {
-    this.init();
     this.start();
   }
 }
