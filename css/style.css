@@ -22,6 +22,159 @@ body {
   gap: 20px;
 }
 
+.main-content {
+  display: flex;
+  gap: 30px;
+  align-items: flex-start;
+}
+
+.game-section {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 20px;
+}
+
+.leaderboard-section {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 15px;
+}
+
+.leaderboard-title {
+  font-size: 1.8rem;
+  font-weight: bold;
+  color: #00ff88;
+  text-shadow: 0 0 10px rgba(0, 255, 136, 0.5);
+  margin: 0;
+}
+
+.leaderboard {
+  width: 250px;
+  border: 3px solid #00ff88;
+  border-radius: 10px;
+  box-shadow: 0 0 20px rgba(0, 255, 136, 0.3);
+  padding: 15px;
+  background-color: rgba(15, 15, 30, 0.8);
+}
+
+.leaderboard-placeholder {
+  text-align: center;
+  color: #888;
+  font-size: 1rem;
+  padding: 20px 0;
+}
+
+.leaderboard-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 10px 15px;
+  margin-bottom: 8px;
+  border-radius: 8px;
+  background-color: rgba(0, 255, 136, 0.1);
+  transition: all 0.3s ease;
+}
+
+.leaderboard-item:last-child {
+  margin-bottom: 0;
+}
+
+.leaderboard-item .rank {
+  font-size: 1.2rem;
+  font-weight: bold;
+  color: #ffd700;
+  width: 30px;
+  text-align: center;
+}
+
+.leaderboard-item .name {
+  font-size: 1rem;
+  color: #ffffff;
+  flex: 1;
+  margin-left: 15px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.leaderboard-item .score {
+  font-size: 1.1rem;
+  font-weight: bold;
+  color: #ff6b6b;
+  min-width: 50px;
+  text-align: right;
+}
+
+.leaderboard-item.highlight {
+  background-color: rgba(0, 255, 136, 0.3);
+  border: 2px solid #00ff88;
+  box-shadow: 0 0 15px rgba(0, 255, 136, 0.5);
+  animation: pulse 1.5s infinite;
+}
+
+@keyframes pulse {
+  0% {
+    box-shadow: 0 0 15px rgba(0, 255, 136, 0.5);
+  }
+  50% {
+    box-shadow: 0 0 25px rgba(0, 255, 136, 0.8);
+  }
+  100% {
+    box-shadow: 0 0 15px rgba(0, 255, 136, 0.5);
+  }
+}
+
+.name-input-section {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 15px;
+  width: 100%;
+  max-width: 350px;
+}
+
+.congratulations-text {
+  font-size: 1.1rem;
+  color: #00ff88;
+  font-weight: bold;
+  text-shadow: 0 0 10px rgba(0, 255, 136, 0.5);
+}
+
+.input-wrapper {
+  display: flex;
+  gap: 10px;
+  width: 100%;
+}
+
+.name-input {
+  flex: 1;
+  padding: 10px 15px;
+  font-size: 1rem;
+  border: 2px solid #00ff88;
+  border-radius: 25px;
+  background-color: rgba(15, 15, 30, 0.8);
+  color: #ffffff;
+  outline: none;
+  transition: all 0.3s ease;
+}
+
+.name-input::placeholder {
+  color: #888;
+}
+
+.name-input:focus {
+  box-shadow: 0 0 15px rgba(0, 255, 136, 0.5);
+}
+
+.small-button {
+  padding: 10px 20px;
+  font-size: 1rem;
+  border-radius: 25px;
+  white-space: nowrap;
+}
+
 .game-title {
   font-size: 2.5rem;
   font-weight: bold;
