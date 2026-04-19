@@ -12,12 +12,55 @@ document.addEventListener('DOMContentLoaded', () => {
   const nameInputSection = document.getElementById('nameInputSection');
   const playerNameInput = document.getElementById('playerName');
   const submitNameButton = document.getElementById('submitNameButton');
+  const achievementsElement = document.getElementById('achievements');
+  const achievementNotification = document.getElementById('achievementNotification');
+  const achievementNameElement = document.getElementById('achievementName');
 
   canvas.width = GRID_SIZE * TILE_COUNT;
   canvas.height = GRID_SIZE * TILE_COUNT;
 
   let highlightedRank = null;
   let currentGameScore = 0;
+  let currentGameNormalFoodEaten = 0;
+  let gamesPlayed = 0;
+
+  const ACHIEVEMENTS = [
+    {
+      id: 'first_bite',
+      name: '第一口',
+      description: '吃到第一个食物',
+      icon: '🍎',
+      checkCondition: (stats) => stats.normalFoodEaten >= 1
+    },
+    {
+      id: 'junior_player',
+      name: '初入江湖',
+      description: '得分达到50',
+      icon: '🌟',
+      checkCondition: (stats) => stats.score >= 50
+    },
+    {
+      id: 'level_challenger',
+      name: '关卡挑战者',
+      description: '升到第2关',
+      icon: '🎯',
+      checkCondition: (stats) => stats.level >= 2
+    },
+    {
+      id: 'snake_king',
+      name: '贪吃王',
+      description: '单局吃满10个普通食物',
+      icon: '👑',
+      checkCondition: (stats) => stats.normalFoodEaten >= 10
+    },
+    {
+      id: 'veteran_player',
+      name: '老玩家',
+      description: '累计游戏5次',
+      icon: '🏆',
+      checkCondition: (stats) => stats.gamesPlayed >= 5
+    }
+  ];
 
   function getHighScore() {
     const saved = localStorage.getItem('snakeHighScore');
@@ -109,20 +152,110 @@ document.addEventListener('DOMContentLoaded', () => {
     leaderboardElement.innerHTML = html;
   }
 
+  function getAchievements() {
+    const saved = localStorage.getItem('snakeAchievements');
+    return saved ? JSON.parse(saved) : {};
+  }
+
+  function saveAchievements(achievements) {
+    localStorage.setItem('snakeAchievements', JSON.stringify(achievements));
+  }
+
+  function getGamesPlayed() {
+    const saved = localStorage.getItem('snakeGamesPlayed');
+    return saved ? parseInt(saved, 10) : 0;
+  }
+
+  function incrementGamesPlayed() {
+    const current = getGamesPlayed();
+    localStorage.setItem('snakeGamesPlayed', (current + 1).toString());
+    return current + 1;
+  }
+
+  function showAchievementNotification(achievement) {
+    achievementNameElement.textContent = achievement.name;
+    achievementNotification.classList.add('show');
+    
+    setTimeout(() => {
+      achievementNotification.classList.remove('show');
+    }, 3000);
+  }
+
+  function checkAchievements() {
+    const unlockedAchievements = getAchievements();
+    const currentStats = {
+      score: game.score,
+      level: game.level,
+      normalFoodEaten: currentGameNormalFoodEaten,
+      gamesPlayed: gamesPlayed
+    };
+    
+    let newAchievements = false;
+    
+    for (const achievement of ACHIEVEMENTS) {
+      if (!unlockedAchievements[achievement.id] && achievement.checkCondition(currentStats)) {
+        unlockedAchievements[achievement.id] = true;
+        newAchievements = true;
+        showAchievementNotification(achievement);
+      }
+    }
+    
+    if (newAchievements) {
+      saveAchievements(unlockedAchievements);
+      renderAchievements();
+    }
+  }
+
+  function renderAchievements() {
+    const unlockedAchievements = getAchievements();
+    
+    let html = '';
+    for (const achievement of ACHIEVEMENTS) {
+      const isUnlocked = unlockedAchievements[achievement.id];
+      const className = isUnlocked ? 'unlocked' : 'locked';
+      
+      html += `
+        <div class="achievement-item ${className}">
+          <div class="achievement-icon">${achievement.icon}</div>
+          <div class="achievement-info">
+            <div class="achievement-name">${achievement.name}</div>
+            <div class="achievement-desc">${achievement.description}</div>
+          </div>
+        </div>
+      `;
+    }
+    
+    achievementsElement.innerHTML = html;
+  }
+
   updateHighScoreDisplay();
   renderLeaderboard();
+  renderAchievements();
+  gamesPlayed = getGamesPlayed();
 
   const game = new Game(canvas);
 
   game.onScoreUpdate = (score) => {
     scoreElement.textContent = score;
+    checkAchievements();
   };
 
   game.onLevelUpdate = (level) => {
     levelElement.textContent = level;
+    checkAchievements();
+  };
+
+  game.onFoodEaten = (foodType) => {
+    if (foodType.id === FOOD_TYPES.NORMAL.id) {
+      currentGameNormalFoodEaten++;
+      checkAchievements();
+    }
   };
 
   game.onGameOver = (score) => {
+    gamesPlayed = incrementGamesPlayed();
+    checkAchievements();
+    
     const isNewHighScore = setHighScore(score);
     updateHighScoreDisplay();
     finalScoreElement.textContent = score;
@@ -200,6 +333,7 @@ document.addEventListener('DOMContentLoaded', () => {
       
       if (startScreen.style.display !== 'none') {
         startScreen.style.display = 'none';
+        currentGameNormalFoodEaten = 0;
       }
       
       game.handleKeyPress(direction);
@@ -213,6 +347,7 @@ document.addEventListener('DOMContentLoaded', () => {
   restartButton.addEventListener('click', () => {
     gameOverScreen.style.display = 'none';
     startScreen.style.display = 'none';
+    currentGameNormalFoodEaten = 0;
     game.restart();
     updateHighScoreDisplay();
     
@@ -224,6 +359,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
   startScreen.addEventListener('click', () => {
     startScreen.style.display = 'none';
+    currentGameNormalFoodEaten = 0;
     game.start();
   });
 });

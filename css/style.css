@@ -304,3 +304,118 @@ body {
   font-family: 'Courier New', monospace;
   margin: 0 2px;
 }
+
+.achievements-title {
+  font-size: 1.8rem;
+  font-weight: bold;
+  color: #ffd700;
+  text-shadow: 0 0 10px rgba(255, 215, 0, 0.5);
+  margin: 0;
+  margin-top: 20px;
+}
+
+.achievements {
+  width: 250px;
+  border: 3px solid #ffd700;
+  border-radius: 10px;
+  box-shadow: 0 0 20px rgba(255, 215, 0, 0.3);
+  padding: 15px;
+  background-color: rgba(15, 15, 30, 0.8);
+}
+
+.achievement-item {
+  display: flex;
+  align-items: center;
+  padding: 10px 15px;
+  margin-bottom: 8px;
+  border-radius: 8px;
+  transition: all 0.3s ease;
+}
+
+.achievement-item:last-child {
+  margin-bottom: 0;
+}
+
+.achievement-item.unlocked {
+  background-color: rgba(255, 215, 0, 0.2);
+  border: 2px solid #ffd700;
+}
+
+.achievement-item.locked {
+  background-color: rgba(108, 117, 125, 0.2);
+  border: 2px solid #6c757d;
+  opacity: 0.6;
+}
+
+.achievement-icon {
+  font-size: 1.5rem;
+  margin-right: 10px;
+}
+
+.achievement-item.locked .achievement-icon {
+  filter: grayscale(100%);
+}
+
+.achievement-info {
+  flex: 1;
+}
+
+.achievement-name {
+  font-size: 1rem;
+  font-weight: bold;
+  margin-bottom: 2px;
+}
+
+.achievement-item.unlocked .achievement-name {
+  color: #ffd700;
+}
+
+.achievement-item.locked .achievement-name {
+  color: #888;
+}
+
+.achievement-desc {
+  font-size: 0.8rem;
+  color: #aaa;
+}
+
+.achievement-notification {
+  position: fixed;
+  top: 20px;
+  right: -300px;
+  display: flex;
+  align-items: center;
+  padding: 15px 20px;
+  background: linear-gradient(135deg, rgba(255, 215, 0, 0.9), rgba(255, 165, 0, 0.9));
+  border-radius: 10px;
+  box-shadow: 0 0 20px rgba(255, 215, 0, 0.5);
+  z-index: 1000;
+  transition: right 0.5s ease;
+}
+
+.achievement-notification.show {
+  right: 20px;
+}
+
+.achievement-notification .achievement-icon {
+  font-size: 2rem;
+  margin-right: 15px;
+}
+
+.achievement-notification .achievement-content {
+  display: flex;
+  flex-direction: column;
+}
+
+.achievement-notification .achievement-title {
+  font-size: 0.9rem;
+  font-weight: bold;
+  color: #333;
+  margin-bottom: 2px;
+}
+
+.achievement-notification .achievement-name {
+  font-size: 1.1rem;
+  font-weight: bold;
+  color: #000;
+}
