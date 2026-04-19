@@ -52,6 +52,9 @@ const KEY_CODES = {
   SPACE: 32
 };
 
+const LEVEL_UP_SCORE = 100;
+const OBSTACLES_PER_LEVEL = 3;
+
 const COLORS = {
   BACKGROUND: '#1a1a2e',
   GRID: '#16213e',
@@ -60,5 +63,6 @@ const COLORS = {
   FOOD: '#ff6b6b',
   GOLDEN_FOOD: '#ffd700',
   POISON_FOOD: '#9b59b6',
+  OBSTACLE: '#6c757d',
   TEXT: '#ffffff'
 };

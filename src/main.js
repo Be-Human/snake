@@ -1,6 +1,7 @@
 document.addEventListener('DOMContentLoaded', () => {
   const canvas = document.getElementById('gameCanvas');
   const scoreElement = document.getElementById('score');
+  const levelElement = document.getElementById('level');
   const highScoreElement = document.getElementById('highScore');
   const gameOverScreen = document.getElementById('gameOverScreen');
   const finalScoreElement = document.getElementById('finalScore');
@@ -115,6 +116,10 @@ document.addEventListener('DOMContentLoaded', () => {
 
   game.onScoreUpdate = (score) => {
     scoreElement.textContent = score;
+  };
+
+  game.onLevelUpdate = (level) => {
+    levelElement.textContent = level;
   };
 
   game.onGameOver = (score) => {

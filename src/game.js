@@ -6,8 +6,10 @@ class Game {
     
     this.snake = new Snake();
     this.foods = [];
+    this.obstacles = [];
     
     this.score = 0;
+    this.level = 1;
     this.gameSpeed = INITIAL_SNAKE_SPEED;
     this.isGameOver = false;
     this.isPlaying = false;
@@ -17,6 +19,7 @@ class Game {
     this.animationFrameId = null;
     
     this.onScoreUpdate = null;
+    this.onLevelUpdate = null;
     this.onGameOver = null;
     
     this.poisonFlashStartTime = 0;
@@ -25,18 +28,23 @@ class Game {
 
   init() {
     this.score = 0;
+    this.level = 1;
     this.gameSpeed = INITIAL_SNAKE_SPEED;
     this.isGameOver = false;
     this.isPlaying = false;
     this.isPaused = false;
     
     this.snake.reset();
+    this.obstacles = [];
     this.generateAllFoods(0);
     
     this.poisonFlashStartTime = 0;
     
     if (this.onScoreUpdate) {
       this.onScoreUpdate(this.score);
+    }
+    if (this.onLevelUpdate) {
+      this.onLevelUpdate(this.level);
     }
   }
 
@@ -114,7 +122,7 @@ class Game {
       }
     }
 
-    if (this.snake.checkCollision()) {
+    if (this.snake.checkCollision() || this.checkObstacleCollision()) {
       this.gameOver();
     }
   }
@@ -124,6 +132,7 @@ class Game {
       this.snake.grow();
       this.score += food.type.score;
       this.increaseSpeed();
+      this.checkLevelUp();
     } else if (food.type.effect === 'shrink') {
       this.snake.shrink(food.type.shrinkAmount);
       this.score += food.type.score;
@@ -146,11 +155,73 @@ class Game {
     }
   }
 
+  checkLevelUp() {
+    const newLevel = Math.floor(this.score / LEVEL_UP_SCORE) + 1;
+    if (newLevel > this.level) {
+      const levelsToAdd = newLevel - this.level;
+      for (let i = 0; i < levelsToAdd; i++) {
+        this.addObstacles();
+      }
+      this.level = newLevel;
+      if (this.onLevelUpdate) {
+        this.onLevelUpdate(this.level);
+      }
+    }
+  }
+
+  addObstacles() {
+    for (let i = 0; i < OBSTACLES_PER_LEVEL; i++) {
+      this.addSingleObstacle();
+    }
+  }
+
+  addSingleObstacle() {
+    let validPosition = false;
+    let attempts = 0;
+    while (!validPosition && attempts < 100) {
+      const x = Math.floor(Math.random() * TILE_COUNT);
+      const y = Math.floor(Math.random() * TILE_COUNT);
+      validPosition = this.isValidObstaclePosition(x, y);
+      if (validPosition) {
+        this.obstacles.push({ x, y });
+      }
+      attempts++;
+    }
+  }
+
+  isValidObstaclePosition(x, y) {
+    if (this.snake.checkCollision({ x, y })) {
+      return false;
+    }
+    for (let food of this.foods) {
+      if (food.position.x === x && food.position.y === y) {
+        return false;
+      }
+    }
+    for (let obstacle of this.obstacles) {
+      if (obstacle.x === x && obstacle.y === y) {
+        return false;
+      }
+    }
+    return true;
+  }
+
+  checkObstacleCollision() {
+    const head = this.snake.body[0];
+    for (let obstacle of this.obstacles) {
+      if (head.x === obstacle.x && head.y === obstacle.y) {
+        return true;
+      }
+    }
+    return false;
+  }
+
   draw(currentTime = 0) {
     this.ctx.fillStyle = COLORS.BACKGROUND;
     this.ctx.fillRect(0, 0, this.canvas.width, this.canvas.height);
 
     this.drawGrid();
+    this.drawObstacles();
     for (let food of this.foods) {
       food.draw(this.ctx, this.gridSize, currentTime);
     }
@@ -160,6 +231,18 @@ class Game {
     
     if (this.isPaused) {
       this.drawPauseText();
+    }
+  }
+
+  drawObstacles() {
+    this.ctx.fillStyle = COLORS.OBSTACLE;
+    for (let obstacle of this.obstacles) {
+      this.ctx.fillRect(
+        obstacle.x * this.gridSize + 1,
+        obstacle.y * this.gridSize + 1,
+        this.gridSize - 2,
+        this.gridSize - 2
+      );
     }
   }
 
