@@ -5,7 +5,7 @@ class Food {
     this.spawnTime = 0;
   }
 
-  generate(snake, currentTime = 0, existingFoods = []) {
+  generate(snake, currentTime = 0, existingFoods = [], obstacles = []) {
     let validPosition = false;
     let attempts = 0;
     while (!validPosition && attempts < 100) {
@@ -24,6 +24,16 @@ class Food {
           }
         }
       }
+      
+      if (validPosition) {
+        for (let obstacle of obstacles) {
+          if (obstacle.x === this.position.x && obstacle.y === this.position.y) {
+            validPosition = false;
+            break;
+          }
+        }
+      }
+      
       attempts++;
     }
     this.spawnTime = currentTime;

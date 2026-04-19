@@ -56,7 +56,7 @@ class Game {
     ];
     
     for (let food of this.foods) {
-      food.generate(this.snake, currentTime, this.foods);
+      food.generate(this.snake, currentTime, this.foods, this.obstacles);
     }
   }
 
@@ -64,7 +64,7 @@ class Game {
     const index = this.foods.indexOf(food);
     if (index !== -1) {
       const newFood = new Food(food.type);
-      newFood.generate(this.snake, currentTime, this.foods);
+      newFood.generate(this.snake, currentTime, this.foods, this.obstacles);
       this.foods[index] = newFood;
     }
   }
