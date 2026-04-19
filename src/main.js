@@ -52,12 +52,16 @@ document.addEventListener('DOMContentLoaded', () => {
     document.documentElement.style.setProperty('--accent-color', css.accent);
     document.documentElement.style.setProperty('--overlay-bg', css.overlayBg);
     document.documentElement.style.setProperty('--card-bg', css.cardBg);
+    document.documentElement.style.setProperty('--achievement-color', css.achievement);
 
     document.documentElement.style.setProperty('--primary-color-rgba', hexToRgba(css.primary, 0.5));
     document.documentElement.style.setProperty('--primary-color-rgba-light', hexToRgba(css.primary, 0.3));
     document.documentElement.style.setProperty('--primary-color-rgba-medium', hexToRgba(css.primary, 0.3));
     document.documentElement.style.setProperty('--primary-color-rgba-verylight', hexToRgba(css.primary, 0.1));
     document.documentElement.style.setProperty('--accent-color-rgba', hexToRgba(css.accent, 0.5));
+    document.documentElement.style.setProperty('--achievement-color-rgba', hexToRgba(css.achievement, 0.5));
+    document.documentElement.style.setProperty('--achievement-color-rgba-light', hexToRgba(css.achievement, 0.3));
+    document.documentElement.style.setProperty('--achievement-color-rgba-bg', hexToRgba(css.achievement, 0.2));
 
     skinButtons.forEach(btn => {
       if (btn.dataset.skin === skinId) {

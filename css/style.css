@@ -12,6 +12,7 @@
   --accent-color: #ff6b6b;
   --overlay-bg: rgba(15, 15, 30, 0.9);
   --card-bg: rgba(15, 15, 30, 0.8);
+  --achievement-color: #ffd700;
 }
 
 body {
@@ -347,17 +348,17 @@ body {
 .achievements-title {
   font-size: 1.8rem;
   font-weight: bold;
-  color: #ffd700;
-  text-shadow: 0 0 10px rgba(255, 215, 0, 0.5);
+  color: var(--achievement-color);
+  text-shadow: 0 0 10px var(--achievement-color-rgba, rgba(255, 215, 0, 0.5));
   margin: 0;
   margin-top: 20px;
 }
 
 .achievements {
   width: 250px;
-  border: 3px solid #ffd700;
+  border: 3px solid var(--achievement-color);
   border-radius: 10px;
-  box-shadow: 0 0 20px rgba(255, 215, 0, 0.3);
+  box-shadow: 0 0 20px var(--achievement-color-rgba-light, rgba(255, 215, 0, 0.3));
   padding: 15px;
   background-color: var(--card-bg);
 }
@@ -376,8 +377,8 @@ body {
 }
 
 .achievement-item.unlocked {
-  background-color: rgba(255, 215, 0, 0.2);
-  border: 2px solid #ffd700;
+  background-color: var(--achievement-color-rgba-bg, rgba(255, 215, 0, 0.2));
+  border: 2px solid var(--achievement-color);
 }
 
 .achievement-item.locked {
@@ -406,11 +407,11 @@ body {
 }
 
 .achievement-item.unlocked .achievement-name {
-  color: #ffd700;
+  color: var(--achievement-color);
 }
 
 .achievement-item.locked .achievement-name {
-  color: #888;
+  color: var(--secondary-text);
 }
 
 .achievement-desc {

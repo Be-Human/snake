@@ -74,7 +74,8 @@ const SKINS = {
       secondary: '#aaa',
       accent: '#ff6b6b',
       overlayBg: 'rgba(15, 15, 30, 0.9)',
-      cardBg: 'rgba(15, 15, 30, 0.8)'
+      cardBg: 'rgba(15, 15, 30, 0.8)',
+      achievement: '#ffd700'
     },
     foodColors: {
       NORMAL: '#ff6b6b',
@@ -100,7 +101,8 @@ const SKINS = {
       secondary: '#aaa',
       accent: '#ff69b4',
       overlayBg: 'rgba(10, 10, 26, 0.95)',
-      cardBg: 'rgba(26, 10, 46, 0.8)'
+      cardBg: 'rgba(26, 10, 46, 0.8)',
+      achievement: '#ffff00'
     },
     foodColors: {
       NORMAL: '#ff69b4',
@@ -126,7 +128,8 @@ const SKINS = {
       secondary: '#6c757d',
       accent: '#dc3545',
       overlayBg: 'rgba(255, 255, 255, 0.95)',
-      cardBg: 'rgba(248, 249, 250, 0.9)'
+      cardBg: 'rgba(248, 249, 250, 0.9)',
+      achievement: '#856404'
     },
     foodColors: {
       NORMAL: '#dc3545',
@@ -159,7 +162,8 @@ function getSkinColors() {
 
 function getFoodColor(foodTypeId) {
   const skin = getCurrentSkin();
-  return skin.foodColors[foodTypeId] || FOOD_TYPES[foodTypeId]?.color || '#ff6b6b';
+  const typeKey = foodTypeId.toUpperCase();
+  return skin.foodColors[typeKey] || FOOD_TYPES[typeKey]?.color || '#ff6b6b';
 }
 
 const COLORS = {
