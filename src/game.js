@@ -38,6 +38,7 @@ class Game {
     this.isGoldenBodyActive = false;
     this.isWeaponActive = false;
     this.isSpeedBoostActive = false;
+    this.speedBeforeBoost = 0;
     this.keysPressed = {};
   }
 
@@ -67,6 +68,7 @@ class Game {
     this.isGoldenBodyActive = false;
     this.isWeaponActive = false;
     this.isSpeedBoostActive = false;
+    this.speedBeforeBoost = 0;
     this.keysPressed = {};
     
     if (this.onScoreUpdate) {
@@ -167,7 +169,8 @@ class Game {
         break;
       case 'speed':
         this.isSpeedBoostActive = true;
-        this.gameSpeed = this.baseGameSpeed * 1.5;
+        this.speedBeforeBoost = this.gameSpeed;
+        this.gameSpeed = this.gameSpeed * 1.5;
         break;
     }
     
@@ -193,7 +196,8 @@ class Game {
         break;
       case 'speed':
         this.isSpeedBoostActive = false;
-        this.gameSpeed = this.baseGameSpeed;
+        this.gameSpeed = this.speedBeforeBoost;
+        this.speedBeforeBoost = 0;
         break;
     }
     
