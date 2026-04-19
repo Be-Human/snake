@@ -92,23 +92,23 @@ body {
 
 .difficulty-buttons {
   display: flex;
-  gap: 15px;
+  gap: 10px;
 }
 
 .difficulty-button {
   display: flex;
   flex-direction: column;
   align-items: center;
-  padding: 12px 20px;
-  min-width: 120px;
-  font-size: 0.95rem;
+  padding: 8px 12px;
+  min-width: 105px;
+  font-size: 0.9rem;
   color: var(--text-color);
   background-color: transparent;
   border: 2px solid var(--primary-color);
-  border-radius: 12px;
+  border-radius: 10px;
   cursor: pointer;
   transition: all 0.3s ease;
-  opacity: 0.8;
+  opacity: 0.85;
 }
 
 .difficulty-button:hover {
