@@ -16,6 +16,7 @@ document.addEventListener('DOMContentLoaded', () => {
   const achievementNotification = document.getElementById('achievementNotification');
   const achievementNameElement = document.getElementById('achievementName');
   const skinButtons = document.querySelectorAll('.skin-button');
+  const difficultyButtons = document.querySelectorAll('.difficulty-button');
 
   canvas.width = GRID_SIZE * TILE_COUNT;
   canvas.height = GRID_SIZE * TILE_COUNT;
@@ -94,6 +95,39 @@ document.addEventListener('DOMContentLoaded', () => {
     button.addEventListener('click', () => {
       const skinId = button.dataset.skin;
       handleSkinChange(skinId);
+    });
+  });
+
+  function applyDifficulty(difficultyId) {
+    if (!setCurrentDifficulty(difficultyId)) {
+      return;
+    }
+
+    difficultyButtons.forEach(btn => {
+      if (btn.dataset.difficulty === difficultyId) {
+        btn.classList.add('active');
+      } else {
+        btn.classList.remove('active');
+      }
+    });
+
+    localStorage.setItem('snakeDifficulty', difficultyId);
+  }
+
+  function loadSavedDifficulty() {
+    const savedDifficulty = localStorage.getItem('snakeDifficulty');
+    if (savedDifficulty) {
+      applyDifficulty(savedDifficulty);
+    } else {
+      applyDifficulty('normal');
+    }
+  }
+
+  difficultyButtons.forEach(button => {
+    button.addEventListener('click', (e) => {
+      e.stopPropagation();
+      const difficultyId = button.dataset.difficulty;
+      applyDifficulty(difficultyId);
     });
   });
 
@@ -320,6 +354,7 @@ document.addEventListener('DOMContentLoaded', () => {
   }
 
   loadSavedSkin();
+  loadSavedDifficulty();
 
   updateHighScoreDisplay();
   renderLeaderboard();

@@ -53,7 +53,46 @@ const KEY_CODES = {
 };
 
 const LEVEL_UP_SCORE = 100;
-const OBSTACLES_PER_LEVEL = 3;
+
+const DIFFICULTIES = {
+  EASY: {
+    id: 'easy',
+    name: '简单',
+    initialSpeed: 3,
+    obstaclesPerLevel: 1,
+    hasPoison: false
+  },
+  NORMAL: {
+    id: 'normal',
+    name: '普通',
+    initialSpeed: 5,
+    obstaclesPerLevel: 3,
+    hasPoison: true
+  },
+  HARD: {
+    id: 'hard',
+    name: '困难',
+    initialSpeed: 8,
+    obstaclesPerLevel: 5,
+    hasPoison: true
+  }
+};
+
+let CURRENT_DIFFICULTY = DIFFICULTIES.NORMAL;
+
+function getCurrentDifficulty() {
+  return CURRENT_DIFFICULTY;
+}
+
+function setCurrentDifficulty(difficultyId) {
+  for (const diffKey in DIFFICULTIES) {
+    if (DIFFICULTIES[diffKey].id === difficultyId) {
+      CURRENT_DIFFICULTY = DIFFICULTIES[diffKey];
+      return true;
+    }
+  }
+  return false;
+}
 
 const SKINS = {
   CLASSIC: {

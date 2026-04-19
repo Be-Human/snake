@@ -28,9 +28,11 @@ class Game {
   }
 
   init() {
+    const difficulty = getCurrentDifficulty();
+    
     this.score = 0;
     this.level = 1;
-    this.gameSpeed = INITIAL_SNAKE_SPEED;
+    this.gameSpeed = difficulty.initialSpeed;
     this.isGameOver = false;
     this.isPlaying = false;
     this.isPaused = false;
@@ -50,11 +52,16 @@ class Game {
   }
 
   generateAllFoods(currentTime) {
+    const difficulty = getCurrentDifficulty();
+    
     this.foods = [
       new Food(FOOD_TYPES.NORMAL),
-      new Food(FOOD_TYPES.GOLDEN),
-      new Food(FOOD_TYPES.POISON)
+      new Food(FOOD_TYPES.GOLDEN)
     ];
+    
+    if (difficulty.hasPoison) {
+      this.foods.push(new Food(FOOD_TYPES.POISON));
+    }
     
     for (let food of this.foods) {
       food.generate(this.snake, currentTime, this.foods, this.obstacles);
@@ -175,7 +182,8 @@ class Game {
   }
 
   addObstacles() {
-    for (let i = 0; i < OBSTACLES_PER_LEVEL; i++) {
+    const difficulty = getCurrentDifficulty();
+    for (let i = 0; i < difficulty.obstaclesPerLevel; i++) {
       this.addSingleObstacle();
     }
   }
