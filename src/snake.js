@@ -85,12 +85,24 @@ class Snake {
   }
 
   draw(ctx, gridSize) {
+    const stage = getSnakeGrowthStage(this.body.length);
+    const skinColors = getSkinColors();
+    
     this.body.forEach((segment, index) => {
-      ctx.fillStyle = index === 0 ? COLORS.SNAKE_HEAD : COLORS.SNAKE_BODY;
+      const isHead = index === 0;
+      let fillColor;
       
-      if (index === 0) {
-        ctx.shadowBlur = 10;
-        ctx.shadowColor = COLORS.SNAKE_HEAD;
+      if (isHead) {
+        fillColor = getStageHeadColor(stage, skinColors);
+      } else {
+        fillColor = getStageBodyColor(stage, skinColors, index);
+      }
+      
+      ctx.fillStyle = fillColor;
+      
+      if (isHead) {
+        ctx.shadowBlur = 15;
+        ctx.shadowColor = fillColor;
       }
       
       ctx.fillRect(
@@ -101,6 +113,40 @@ class Snake {
       );
       
       ctx.shadowBlur = 0;
+      
+      if (isHead && stage.hasEyes) {
+        this.drawEyes(ctx, segment, gridSize, stage);
+      }
     });
+  }
+
+  drawEyes(ctx, head, gridSize, stage) {
+    const eyeSize = gridSize / 4;
+    const pupilSize = eyeSize / 2;
+    
+    const leftEyeX = head.x * gridSize + gridSize / 3;
+    const rightEyeX = head.x * gridSize + gridSize * 2 / 3;
+    const eyeY = head.y * gridSize + gridSize / 3;
+    
+    ctx.fillStyle = stage.eyeColor;
+    ctx.beginPath();
+    ctx.arc(leftEyeX, eyeY, eyeSize, 0, Math.PI * 2);
+    ctx.fill();
+    
+    ctx.beginPath();
+    ctx.arc(rightEyeX, eyeY, eyeSize, 0, Math.PI * 2);
+    ctx.fill();
+    
+    ctx.fillStyle = stage.pupilColor;
+    const pupilOffsetX = this.direction.x * (eyeSize / 3);
+    const pupilOffsetY = this.direction.y * (eyeSize / 3);
+    
+    ctx.beginPath();
+    ctx.arc(leftEyeX + pupilOffsetX, eyeY + pupilOffsetY, pupilSize, 0, Math.PI * 2);
+    ctx.fill();
+    
+    ctx.beginPath();
+    ctx.arc(rightEyeX + pupilOffsetX, eyeY + pupilOffsetY, pupilSize, 0, Math.PI * 2);
+    ctx.fill();
   }
 }

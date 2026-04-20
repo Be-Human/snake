@@ -477,6 +477,21 @@ document.addEventListener('DOMContentLoaded', () => {
   game.init();
   game.draw();
 
+  let isDirectionKeyDown = false;
+
+  function isDirectionKey(keyCode) {
+    return (
+      keyCode === KEY_CODES.ARROW_UP ||
+      keyCode === KEY_CODES.ARROW_DOWN ||
+      keyCode === KEY_CODES.ARROW_LEFT ||
+      keyCode === KEY_CODES.ARROW_RIGHT ||
+      keyCode === KEY_CODES.W ||
+      keyCode === KEY_CODES.A ||
+      keyCode === KEY_CODES.S ||
+      keyCode === KEY_CODES.D
+    );
+  }
+
   document.addEventListener('keydown', (e) => {
     if (document.activeElement === playerNameInput) {
       if (e.keyCode === 13) {
@@ -520,7 +535,14 @@ document.addEventListener('DOMContentLoaded', () => {
         currentGameAnyFoodEaten = 0;
       }
       
+      game.isDirectionKeyHeld = true;
       game.handleKeyPress(direction);
+    }
+  });
+
+  document.addEventListener('keyup', (e) => {
+    if (isDirectionKey(e.keyCode)) {
+      game.isDirectionKeyHeld = false;
     }
   });
 

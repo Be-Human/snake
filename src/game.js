@@ -40,6 +40,8 @@ class Game {
     this.isSpeedBoostActive = false;
     this.speedBeforeBoost = 0;
     this.keysPressed = {};
+    this.isDirectionKeyHeld = false;
+    this.baseSpeedBeforeHoldBoost = 0;
   }
 
   init() {
@@ -70,6 +72,8 @@ class Game {
     this.isSpeedBoostActive = false;
     this.speedBeforeBoost = 0;
     this.keysPressed = {};
+    this.isDirectionKeyHeld = false;
+    this.baseSpeedBeforeHoldBoost = 0;
     
     if (this.onScoreUpdate) {
       this.onScoreUpdate(this.score);
@@ -249,6 +253,16 @@ class Game {
       this.trySpawnPowerup(currentTime);
       this.draw(currentTime);
       return;
+    }
+    
+    if (this.isDirectionKeyHeld && !this.isSpeedBoostActive) {
+      if (this.baseSpeedBeforeHoldBoost === 0) {
+        this.baseSpeedBeforeHoldBoost = this.gameSpeed;
+      }
+      this.gameSpeed = Math.min(this.baseSpeedBeforeHoldBoost * 1.5, MAX_SPEED * 1.5);
+    } else if (!this.isDirectionKeyHeld && this.baseSpeedBeforeHoldBoost !== 0) {
+      this.gameSpeed = this.baseSpeedBeforeHoldBoost;
+      this.baseSpeedBeforeHoldBoost = 0;
     }
     
     if (secondsSinceLastRender < 1 / this.gameSpeed) return;
