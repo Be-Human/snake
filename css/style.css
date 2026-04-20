@@ -595,12 +595,26 @@ body {
   transform: translateY(0);
 }
 
+.instructions-container {
+  position: relative;
+  width: 100%;
+  min-height: 70px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
 .instructions {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
   font-size: 0.75rem;
   color: var(--secondary-text);
   text-align: center;
   line-height: 1.5;
   margin: 0;
+  transition: opacity 0.2s ease, visibility 0.2s ease;
 }
 
 .instructions kbd {
