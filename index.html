@@ -89,18 +89,20 @@
               </div>
             </div>
             
-            <p class="instructions" id="singlePlayerInstructions">
-              操作方式：<br>
-              <kbd>↑</kbd> <kbd>↓</kbd> <kbd>←</kbd> <kbd>→</kbd> 或 <kbd>W</kbd> <kbd>A</kbd> <kbd>S</kbd> <kbd>D</kbd> 控制方向<br>
-              吃到食物得分，速度逐渐加快，撞墙或撞自己游戏结束
-            </p>
-            
-            <p class="instructions" id="multiplayerInstructions" style="display: none;">
-              操作方式：<br>
-              <span class="player1-instruction"><kbd>W</kbd> <kbd>A</kbd> <kbd>S</kbd> <kbd>D</kbd> 控制玩家1（绿色）</span><br>
-              <span class="player2-instruction"><kbd>↑</kbd> <kbd>↓</kbd> <kbd>←</kbd> <kbd>→</kbd> 控制玩家2（红色）</span><br>
-              吃到食物得分，撞墙、撞自己或撞对方蛇身即死亡，存活者获胜
-            </p>
+            <div class="instructions-container">
+              <p class="instructions" id="singlePlayerInstructions">
+                操作方式：<br>
+                <kbd>↑</kbd> <kbd>↓</kbd> <kbd>←</kbd> <kbd>→</kbd> 或 <kbd>W</kbd> <kbd>A</kbd> <kbd>S</kbd> <kbd>D</kbd> 控制方向<br>
+                吃到食物得分，速度逐渐加快，撞墙或撞自己游戏结束
+              </p>
+              
+              <p class="instructions" id="multiplayerInstructions" style="opacity: 0; visibility: hidden;">
+                操作方式：<br>
+                <span class="player1-instruction"><kbd>W</kbd> <kbd>A</kbd> <kbd>S</kbd> <kbd>D</kbd> 控制玩家1（绿色）</span><br>
+                <span class="player2-instruction"><kbd>↑</kbd> <kbd>↓</kbd> <kbd>←</kbd> <kbd>→</kbd> 控制玩家2（红色）</span><br>
+                吃到食物得分，撞墙、撞自己或撞对方蛇身即死亡，存活者获胜
+              </p>
+            </div>
           </div>
           
           <div id="gameOverScreen" class="overlay">

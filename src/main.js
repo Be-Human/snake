@@ -174,11 +174,23 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     if (modeId === 'multiplayer') {
-      if (singlePlayerInstructions) singlePlayerInstructions.style.display = 'none';
-      if (multiplayerInstructions) multiplayerInstructions.style.display = 'block';
+      if (singlePlayerInstructions) {
+        singlePlayerInstructions.style.opacity = '0';
+        singlePlayerInstructions.style.visibility = 'hidden';
+      }
+      if (multiplayerInstructions) {
+        multiplayerInstructions.style.opacity = '1';
+        multiplayerInstructions.style.visibility = 'visible';
+      }
     } else {
-      if (singlePlayerInstructions) singlePlayerInstructions.style.display = 'block';
-      if (multiplayerInstructions) multiplayerInstructions.style.display = 'none';
+      if (singlePlayerInstructions) {
+        singlePlayerInstructions.style.opacity = '1';
+        singlePlayerInstructions.style.visibility = 'visible';
+      }
+      if (multiplayerInstructions) {
+        multiplayerInstructions.style.opacity = '0';
+        multiplayerInstructions.style.visibility = 'hidden';
+      }
     }
 
     localStorage.setItem('snakeGameMode', modeId);
