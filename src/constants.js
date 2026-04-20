@@ -266,6 +266,91 @@ function getPowerupColor(powerupTypeId) {
   return skin.powerupColors[typeKey] || '#ffffff';
 }
 
+const SNAKE_GROWTH_STAGES = [
+  {
+    minLength: 3,
+    name: '初生',
+    headColor: null,
+    bodyColor: null,
+    shadowColor: null,
+    bodyStyle: 'solid',
+    hasEyes: true,
+    eyeColor: '#ffffff',
+    pupilColor: '#000000'
+  },
+  {
+    minLength: 6,
+    name: '成长',
+    headColor: null,
+    bodyColor: null,
+    shadowColor: null,
+    bodyStyle: 'gradient',
+    hasEyes: true,
+    eyeColor: '#ffffff',
+    pupilColor: '#000000'
+  },
+  {
+    minLength: 10,
+    name: '成熟',
+    headColor: null,
+    bodyColor: null,
+    shadowColor: null,
+    bodyStyle: 'pattern',
+    hasEyes: true,
+    eyeColor: '#ff0000',
+    pupilColor: '#ffff00'
+  }
+];
+
+function getSnakeGrowthStage(bodyLength) {
+  let stage = SNAKE_GROWTH_STAGES[0];
+  for (let i = SNAKE_GROWTH_STAGES.length - 1; i >= 0; i--) {
+    if (bodyLength >= SNAKE_GROWTH_STAGES[i].minLength) {
+      stage = SNAKE_GROWTH_STAGES[i];
+      break;
+    }
+  }
+  return stage;
+}
+
+function getStageHeadColor(stage, skinColors) {
+  if (stage.headColor) {
+    return stage.headColor;
+  }
+  if (stage.name === '初生') {
+    return skinColors.SNAKE_HEAD;
+  } else if (stage.name === '成长') {
+    return adjustColorBrightness(skinColors.SNAKE_HEAD, 20);
+  } else {
+    return adjustColorBrightness(skinColors.SNAKE_HEAD, 40);
+  }
+}
+
+function getStageBodyColor(stage, skinColors, segmentIndex) {
+  if (stage.bodyColor) {
+    return stage.bodyColor;
+  }
+  
+  if (stage.bodyStyle === 'solid') {
+    return skinColors.SNAKE_BODY;
+  } else if (stage.bodyStyle === 'gradient') {
+    const brightness = -segmentIndex * 5;
+    return adjustColorBrightness(skinColors.SNAKE_BODY, brightness);
+  } else {
+    return segmentIndex % 2 === 0 ? 
+      skinColors.SNAKE_BODY : 
+      adjustColorBrightness(skinColors.SNAKE_BODY, -20);
+  }
+}
+
+function adjustColorBrightness(hex, amount) {
+  const num = parseInt(hex.replace('#', ''), 16);
+  const r = Math.max(0, Math.min(255, (num >> 16) + amount));
+  const g = Math.max(0, Math.min(255, ((num >> 8) & 0x00FF) + amount));
+  const b = Math.max(0, Math.min(255, (num & 0x0000FF) + amount));
+  return '#' + (0x1000000 + (r << 16) + (g << 8) + b).toString(16).slice(1);
+}
+
 const COLORS = {
   get BACKGROUND() { return getSkinColors().BACKGROUND; },
   get GRID() { return getSkinColors().GRID; },
