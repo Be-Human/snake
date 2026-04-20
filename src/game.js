@@ -4,21 +4,26 @@ class Game {
     this.ctx = canvas.getContext('2d');
     this.gridSize = GRID_SIZE;
     
-    this.snake = new Snake();
+    this.gameMode = getCurrentGameMode();
+    this.snake = new Snake(PLAYER_CONFIGS.PLAYER1);
+    this.snake2 = null;
     this.foods = [];
     this.obstacles = [];
     
     this.score = 0;
+    this.score2 = 0;
     this.level = 1;
     this.gameSpeed = INITIAL_SNAKE_SPEED;
     this.isGameOver = false;
     this.isPlaying = false;
     this.isPaused = false;
+    this.winner = null;
     
     this.lastRenderTime = 0;
     this.animationFrameId = null;
     
     this.onScoreUpdate = null;
+    this.onScore2Update = null;
     this.onLevelUpdate = null;
     this.onGameOver = null;
     this.onFoodEaten = null;
@@ -46,16 +51,29 @@ class Game {
 
   init() {
     const difficulty = getCurrentDifficulty();
+    this.gameMode = getCurrentGameMode();
     
     this.score = 0;
+    this.score2 = 0;
     this.level = 1;
     this.gameSpeed = difficulty.initialSpeed;
     this.baseGameSpeed = difficulty.initialSpeed;
     this.isGameOver = false;
     this.isPlaying = false;
     this.isPaused = false;
+    this.winner = null;
     
     this.snake.reset();
+    if (this.gameMode.id === 'multiplayer') {
+      if (!this.snake2) {
+        this.snake2 = new Snake(PLAYER_CONFIGS.PLAYER2);
+      } else {
+        this.snake2.reset();
+      }
+    } else {
+      this.snake2 = null;
+    }
+    
     this.obstacles = [];
     this.generateAllFoods(0);
     
@@ -77,6 +95,9 @@ class Game {
     
     if (this.onScoreUpdate) {
       this.onScoreUpdate(this.score);
+    }
+    if (this.onScore2Update) {
+      this.onScore2Update(this.score2);
     }
     if (this.onLevelUpdate) {
       this.onLevelUpdate(this.level);
@@ -279,11 +300,17 @@ class Game {
     this.trySpawnPowerup(currentTime);
     
     this.snake.move();
+    if (this.snake2) {
+      this.snake2.move();
+    }
 
     for (let i = this.foods.length - 1; i >= 0; i--) {
       const food = this.foods[i];
       if (this.snake.checkFoodCollision(food.position)) {
-        this.handleFoodCollision(food, currentTime);
+        this.handleFoodCollision(food, currentTime, this.snake, 1);
+      }
+      if (this.snake2 && this.snake2.checkFoodCollision(food.position)) {
+        this.handleFoodCollision(food, currentTime, this.snake2, 2);
       }
     }
 
@@ -291,36 +318,116 @@ class Game {
       this.handlePowerupCollision(this.powerup, currentTime);
     }
 
-    const hitObstacle = this.checkObstacleCollision();
-    
-    if (this.snake.checkCollision() || (hitObstacle && !this.isGoldenBodyActive && !this.isWeaponActive)) {
-      this.gameOver();
+    if (this.gameMode.id === 'multiplayer') {
+      this.checkMultiplayerCollision();
+    } else {
+      const hitObstacle = this.checkObstacleCollision(this.snake);
+      
+      if (this.snake.checkCollision() || (hitObstacle && !this.isGoldenBodyActive && !this.isWeaponActive)) {
+        this.gameOver();
+      }
     }
   }
 
-  handleFoodCollision(food, currentTime) {
+  handleFoodCollision(food, currentTime, snake, playerNum) {
     if (food.type.effect === 'grow') {
-      this.snake.grow();
-      this.score += food.type.score;
+      snake.grow();
+      if (playerNum === 1) {
+        this.score += food.type.score;
+        if (this.onScoreUpdate) {
+          this.onScoreUpdate(this.score);
+        }
+      } else {
+        this.score2 += food.type.score;
+        if (this.onScore2Update) {
+          this.onScore2Update(this.score2);
+        }
+      }
       this.increaseSpeed();
       this.checkLevelUp();
     } else if (food.type.effect === 'shrink') {
-      this.snake.shrink(food.type.shrinkAmount);
-      this.score += food.type.score;
-      if (this.score < 0) {
-        this.score = 0;
+      snake.shrink(food.type.shrinkAmount);
+      if (playerNum === 1) {
+        this.score += food.type.score;
+        if (this.score < 0) {
+          this.score = 0;
+        }
+        if (this.onScoreUpdate) {
+          this.onScoreUpdate(this.score);
+        }
+      } else {
+        this.score2 += food.type.score;
+        if (this.score2 < 0) {
+          this.score2 = 0;
+        }
+        if (this.onScore2Update) {
+          this.onScore2Update(this.score2);
+        }
       }
       this.poisonFlashStartTime = currentTime;
     }
     
     this.replaceFood(food, currentTime);
     
-    if (this.onScoreUpdate) {
-      this.onScoreUpdate(this.score);
-    }
-    
     if (this.onFoodEaten) {
       this.onFoodEaten(food.type);
+    }
+  }
+
+  checkObstacleCollision(snake) {
+    const head = snake.body[0];
+    for (let i = this.obstacles.length - 1; i >= 0; i--) {
+      const obstacle = this.obstacles[i];
+      if (head.x === obstacle.x && head.y === obstacle.y) {
+        if (this.isWeaponActive) {
+          this.obstacles.splice(i, 1);
+          return false;
+        }
+        return true;
+      }
+    }
+    return false;
+  }
+
+  checkSnakeCollision(snake, otherSnake = null) {
+    if (snake.checkCollision()) {
+      return true;
+    }
+    
+    if (otherSnake) {
+      const head = snake.body[0];
+      for (let segment of otherSnake.body) {
+        if (segment.x === head.x && segment.y === head.y) {
+          return true;
+        }
+      }
+    }
+    
+    return false;
+  }
+
+  checkMultiplayerCollision() {
+    const snake1HitObstacle = this.checkObstacleCollision(this.snake);
+    const snake2HitObstacle = this.checkObstacleCollision(this.snake2);
+    
+    const snake1HitSelf = this.snake.checkCollision();
+    const snake2HitSelf = this.snake2.checkCollision();
+    
+    const snake1HitSnake2 = this.checkSnakeCollision(this.snake, this.snake2);
+    const snake2HitSnake1 = this.checkSnakeCollision(this.snake2, this.snake);
+    
+    const snake1Dead = snake1HitSelf || (snake1HitObstacle && !this.isGoldenBodyActive && !this.isWeaponActive) || snake1HitSnake2;
+    const snake2Dead = snake2HitSelf || (snake2HitObstacle && !this.isGoldenBodyActive && !this.isWeaponActive) || snake2HitSnake1;
+    
+    if (snake1Dead || snake2Dead) {
+      if (snake1Dead && snake2Dead) {
+        this.winner = 'draw';
+      } else if (snake1Dead) {
+        this.winner = 'player2';
+      } else {
+        this.winner = 'player1';
+      }
+      this.gameOver();
     }
   }
 
@@ -382,21 +489,6 @@ class Game {
     return true;
   }
 
-  checkObstacleCollision() {
-    const head = this.snake.body[0];
-    for (let i = this.obstacles.length - 1; i >= 0; i--) {
-      const obstacle = this.obstacles[i];
-      if (head.x === obstacle.x && head.y === obstacle.y) {
-        if (this.isWeaponActive) {
-          this.obstacles.splice(i, 1);
-          return false;
-        }
-        return true;
-      }
-    }
-    return false;
-  }
-
   draw(currentTime = 0) {
     this.ctx.fillStyle = COLORS.BACKGROUND;
     this.ctx.fillRect(0, 0, this.canvas.width, this.canvas.height);
@@ -410,6 +502,9 @@ class Game {
       this.powerup.draw(this.ctx, this.gridSize, currentTime);
     }
     this.snake.draw(this.ctx, this.gridSize);
+    if (this.snake2) {
+      this.snake2.draw(this.ctx, this.gridSize);
+    }
     
     this.drawPoisonFlash(currentTime);
     
@@ -498,17 +593,20 @@ class Game {
     }
 
     if (this.onGameOver) {
-      this.onGameOver(this.score);
+      this.onGameOver(this.score, this.score2, this.winner);
     }
   }
 
-  handleKeyPress(direction) {
+  handleKeyPress(direction, playerNum = 1) {
     if (!this.isPlaying && !this.isGameOver) {
       this.start();
     }
     
     if (this.isPlaying && !this.isPaused) {
-      this.snake.changeDirection(direction);
+      const snake = playerNum === 1 ? this.snake : this.snake2;
+      if (snake) {
+        snake.changeDirection(direction);
+      }
       
       if (this.isClockActive) {
         const currentTime = performance.now();
@@ -518,11 +616,17 @@ class Game {
           this.lastRenderTime = currentTime;
           
           this.snake.move();
+          if (this.snake2) {
+            this.snake2.move();
+          }
           
           for (let i = this.foods.length - 1; i >= 0; i--) {
             const food = this.foods[i];
             if (this.snake.checkFoodCollision(food.position)) {
-              this.handleFoodCollision(food, currentTime);
+              this.handleFoodCollision(food, currentTime, this.snake, 1);
+            }
+            if (this.snake2 && this.snake2.checkFoodCollision(food.position)) {
+              this.handleFoodCollision(food, currentTime, this.snake2, 2);
             }
           }
           
@@ -530,10 +634,14 @@ class Game {
             this.handlePowerupCollision(this.powerup, currentTime);
           }
           
-          const hitObstacle = this.checkObstacleCollision();
-          
-          if (this.snake.checkCollision() || (hitObstacle && !this.isGoldenBodyActive && !this.isWeaponActive)) {
-            this.gameOver();
+          if (this.gameMode.id === 'multiplayer') {
+            this.checkMultiplayerCollision();
+          } else {
+            const hitObstacle = this.checkObstacleCollision(this.snake);
+            
+            if (this.snake.checkCollision() || (hitObstacle && !this.isGoldenBodyActive && !this.isWeaponActive)) {
+              this.gameOver();
+            }
           }
         }
       }
