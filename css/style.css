@@ -846,34 +846,51 @@ body {
 
 .time-container {
   display: flex;
+  justify-content: center;
   align-items: center;
-  gap: 5px;
+  gap: 10px;
+  padding: 10px 20px;
+  margin: 10px 0;
+  background-color: var(--card-bg);
+  border: 2px solid var(--primary-color);
+  border-radius: 10px;
+  box-shadow: 0 0 15px var(--primary-color-rgba-light, rgba(0, 255, 136, 0.3));
+}
+
+.time-label {
+  font-size: 1.2rem;
+  font-weight: bold;
+  color: var(--primary-color);
 }
 
 .time-display {
-  font-size: 1.5rem;
+  font-size: 2.5rem;
   font-weight: bold;
-  color: var(--primary-color);
-  transition: color 0.3s ease;
+  color: var(--text-color);
+  text-shadow: 0 0 10px var(--primary-color-rgba, rgba(0, 255, 136, 0.5));
+  min-width: 60px;
+  text-align: center;
+  transition: all 0.3s ease;
 }
 
 .time-unit {
-  font-size: 1rem;
+  font-size: 1.2rem;
   color: var(--secondary-text);
 }
 
 .time-warning {
   color: var(--accent-color) !important;
+  text-shadow: 0 0 10px var(--accent-color-rgba, rgba(255, 107, 107, 0.5)) !important;
   animation: timeWarning 0.5s infinite alternate;
 }
 
 @keyframes timeWarning {
   0% {
     transform: scale(1);
-    text-shadow: 0 0 5px var(--accent-color-rgba, rgba(255, 107, 107, 0.5));
+    text-shadow: 0 0 10px var(--accent-color-rgba, rgba(255, 107, 107, 0.5));
   }
   100% {
     transform: scale(1.1);
-    text-shadow: 0 0 20px var(--accent-color-rgba, rgba(255, 107, 107, 0.8));
+    text-shadow: 0 0 25px var(--accent-color-rgba, rgba(255, 107, 107, 0.8));
   }
 }
