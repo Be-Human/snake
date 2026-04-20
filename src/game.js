@@ -29,6 +29,7 @@ class Game {
     this.onFoodEaten = null;
     this.onPowerupActivated = null;
     this.onPowerupDeactivated = null;
+    this.onTimeUpdate = null;
     
     this.poisonFlashStartTime = 0;
     this.pauseStartTime = 0;
@@ -52,6 +53,11 @@ class Game {
     this.isDirectionKeyHeld2 = false;
     this.lastMoveTime1 = 0;
     this.lastMoveTime2 = 0;
+    
+    this.isTimedMode = false;
+    this.remainingTime = 0;
+    this.lastTimeCheck = 0;
+    this.totalSurvivalTime = 0;
   }
 
   init() {
@@ -103,6 +109,11 @@ class Game {
     this.lastMoveTime1 = 0;
     this.lastMoveTime2 = 0;
     
+    this.isTimedMode = this.gameMode.id === 'timed';
+    this.remainingTime = this.isTimedMode ? TIMED_MODE_CONFIG.INITIAL_TIME : 0;
+    this.lastTimeCheck = 0;
+    this.totalSurvivalTime = 0;
+    
     if (this.onScoreUpdate) {
       this.onScoreUpdate(this.score);
     }
@@ -114,6 +125,9 @@ class Game {
     }
     if (this.onPowerupDeactivated) {
       this.onPowerupDeactivated();
+    }
+    if (this.onTimeUpdate && this.isTimedMode) {
+      this.onTimeUpdate(this.remainingTime);
     }
   }
 
@@ -262,6 +276,8 @@ class Game {
     this.isPlaying = true;
     this.lastRenderTime = 0;
     this.gameStartTime = performance.now();
+    this.lastTimeCheck = this.gameStartTime;
+    this.totalSurvivalTime = 0;
     this.gameLoop();
   }
 
@@ -273,6 +289,25 @@ class Game {
     );
 
     const secondsSinceLastRender = (currentTime - this.lastRenderTime) / 1000;
+    
+    if (this.isTimedMode && !this.isPaused) {
+      const secondsSinceLastTimeCheck = (currentTime - this.lastTimeCheck) / 1000;
+      if (secondsSinceLastTimeCheck >= 1) {
+        this.remainingTime -= Math.floor(secondsSinceLastTimeCheck);
+        this.totalSurvivalTime = Math.floor((currentTime - this.gameStartTime) / 1000);
+        this.lastTimeCheck = currentTime;
+        
+        if (this.onTimeUpdate) {
+          this.onTimeUpdate(this.remainingTime);
+        }
+        
+        if (this.remainingTime <= 0) {
+          this.remainingTime = 0;
+          this.gameOver();
+          return;
+        }
+      }
+    }
     
     if (this.isPaused) {
       this.draw(currentTime);
@@ -388,6 +423,27 @@ class Game {
   }
 
   handleFoodCollision(food, currentTime, snake, playerNum) {
+    if (this.isTimedMode) {
+      let timeChange = 0;
+      if (food.type.id === FOOD_TYPES.NORMAL.id) {
+        timeChange = TIMED_MODE_CONFIG.NORMAL_FOOD_TIME_BONUS;
+      } else if (food.type.id === FOOD_TYPES.GOLDEN.id) {
+        timeChange = TIMED_MODE_CONFIG.GOLDEN_FOOD_TIME_BONUS;
+      } else if (food.type.id === FOOD_TYPES.POISON.id) {
+        timeChange = -TIMED_MODE_CONFIG.POISON_TIME_PENALTY;
+      }
+      
+      if (timeChange !== 0) {
+        this.remainingTime += timeChange;
+        if (this.remainingTime < 0) {
+          this.remainingTime = 0;
+        }
+        if (this.onTimeUpdate) {
+          this.onTimeUpdate(this.remainingTime);
+        }
+      }
+    }
+    
     if (food.type.effect === 'grow') {
       snake.grow();
       if (playerNum === 1) {
@@ -650,8 +706,13 @@ class Game {
       this.animationFrameId = null;
     }
 
+    if (this.isTimedMode && this.totalSurvivalTime === 0) {
+      const currentTime = performance.now();
+      this.totalSurvivalTime = Math.floor((currentTime - this.gameStartTime) / 1000);
+    }
+
     if (this.onGameOver) {
-      this.onGameOver(this.score, this.score2, this.winner);
+      this.onGameOver(this.score, this.score2, this.winner, this.isTimedMode, this.totalSurvivalTime);
     }
   }
 
@@ -726,6 +787,9 @@ class Game {
       }
       if (this.activePowerup) {
         this.powerupEndTime += pauseDuration;
+      }
+      if (this.isTimedMode) {
+        this.lastTimeCheck += pauseDuration;
       }
       this.lastRenderTime = 0;
     }
