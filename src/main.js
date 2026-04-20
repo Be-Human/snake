@@ -17,13 +17,32 @@ document.addEventListener('DOMContentLoaded', () => {
   const achievementNameElement = document.getElementById('achievementName');
   const skinButtons = document.querySelectorAll('.skin-button');
   const difficultyButtons = document.querySelectorAll('.difficulty-button');
+  const modeButtons = document.querySelectorAll('.mode-button');
   
   const activePowerupContainer = document.getElementById('activePowerupContainer');
   const activePowerupIcon = document.getElementById('activePowerupIcon');
   const activePowerupName = document.getElementById('activePowerupName');
   const activePowerupTimer = document.getElementById('activePowerupTimer');
   
+  const singlePlayerScoreContainer = document.getElementById('singlePlayerScoreContainer');
+  const multiplayerScoreContainer = document.getElementById('multiplayerScoreContainer');
+  const score1Element = document.getElementById('score1');
+  const score2Element = document.getElementById('score2');
+  const levelMultiplayerElement = document.getElementById('levelMultiplayer');
+  
+  const singlePlayerInstructions = document.getElementById('singlePlayerInstructions');
+  const multiplayerInstructions = document.getElementById('multiplayerInstructions');
+  
+  const singlePlayerGameOver = document.getElementById('singlePlayerGameOver');
+  const multiplayerGameOver = document.getElementById('multiplayerGameOver');
+  const finalScore1Element = document.getElementById('finalScore1');
+  const finalScore2Element = document.getElementById('finalScore2');
+  const winnerTextElement = document.getElementById('winnerText');
+  const gameOverTitle = document.getElementById('gameOverTitle');
+  
   let powerupTimerInterval = null;
+  
+  let currentWinner = null;
 
   canvas.width = GRID_SIZE * TILE_COUNT;
   canvas.height = GRID_SIZE * TILE_COUNT;
@@ -137,6 +156,62 @@ document.addEventListener('DOMContentLoaded', () => {
       applyDifficulty(difficultyId);
     });
   });
+
+  function applyGameMode(modeId) {
+    if (!setCurrentGameMode(modeId)) {
+      return;
+    }
+
+    if (modeButtons && modeButtons.length > 0) {
+      modeButtons.forEach(btn => {
+        if (btn.dataset.mode === modeId) {
+          btn.classList.add('active');
+        } else {
+          btn.classList.remove('active');
+        }
+      });
+    }
+
+    if (modeId === 'multiplayer') {
+      if (singlePlayerInstructions) singlePlayerInstructions.style.display = 'none';
+      if (multiplayerInstructions) multiplayerInstructions.style.display = 'block';
+    } else {
+      if (singlePlayerInstructions) singlePlayerInstructions.style.display = 'block';
+      if (multiplayerInstructions) multiplayerInstructions.style.display = 'none';
+    }
+
+    localStorage.setItem('snakeGameMode', modeId);
+  }
+
+  function loadSavedGameMode() {
+    const savedMode = localStorage.getItem('snakeGameMode');
+    if (savedMode) {
+      applyGameMode(savedMode);
+    } else {
+      applyGameMode('single');
+    }
+  }
+
+  if (modeButtons && modeButtons.length > 0) {
+    modeButtons.forEach(button => {
+      button.addEventListener('click', (e) => {
+        e.stopPropagation();
+        const modeId = button.dataset.mode;
+        applyGameMode(modeId);
+      });
+    });
+  }
+
+  function updateScoreContainerDisplay() {
+    const currentMode = getCurrentGameMode();
+    if (currentMode.id === 'multiplayer') {
+      if (singlePlayerScoreContainer) singlePlayerScoreContainer.style.display = 'none';
+      if (multiplayerScoreContainer) multiplayerScoreContainer.style.display = 'flex';
+    } else {
+      if (singlePlayerScoreContainer) singlePlayerScoreContainer.style.display = 'flex';
+      if (multiplayerScoreContainer) multiplayerScoreContainer.style.display = 'none';
+    }
+  }
 
   const ACHIEVEMENTS = [
     {
@@ -399,6 +474,8 @@ document.addEventListener('DOMContentLoaded', () => {
 
   loadSavedSkin();
   loadSavedDifficulty();
+  loadSavedGameMode();
+  updateScoreContainerDisplay();
 
   updateHighScoreDisplay();
   renderLeaderboard();
@@ -409,11 +486,23 @@ document.addEventListener('DOMContentLoaded', () => {
 
   game.onScoreUpdate = (score) => {
     scoreElement.textContent = score;
+    if (score1Element) {
+      score1Element.textContent = score;
+    }
     checkAchievements();
+  };
+
+  game.onScore2Update = (score) => {
+    if (score2Element) {
+      score2Element.textContent = score;
+    }
   };
 
   game.onLevelUpdate = (level) => {
     levelElement.textContent = level;
+    if (levelMultiplayerElement) {
+      levelMultiplayerElement.textContent = level;
+    }
     checkAchievements();
   };
 
@@ -435,25 +524,63 @@ document.addEventListener('DOMContentLoaded', () => {
     hideActivePowerup();
   };
 
-  game.onGameOver = (score) => {
+  game.onGameOver = (score1, score2, winner) => {
+    const currentMode = getCurrentGameMode();
     gamesPlayed = incrementGamesPlayed();
     checkAchievements();
     
-    const isNewHighScore = setHighScore(score);
-    updateHighScoreDisplay();
-    finalScoreElement.textContent = score;
-    currentGameScore = score;
-    
-    if (isNewHighScore && finalHighScoreElement) {
-      finalHighScoreElement.textContent = score;
-    }
-    
-    nameInputSection.style.display = 'none';
-    
-    if (isInTopFive(score)) {
-      nameInputSection.style.display = 'flex';
-      playerNameInput.value = '';
-      playerNameInput.focus();
+    if (currentMode.id === 'multiplayer') {
+      singlePlayerGameOver.style.display = 'none';
+      multiplayerGameOver.style.display = 'flex';
+      gameOverTitle.textContent = '对战结束';
+      
+      finalScore1Element.textContent = score1;
+      finalScore2Element.textContent = score2;
+      currentWinner = winner;
+      
+      winnerTextElement.className = 'winner-text';
+      
+      if (winner === 'player1') {
+        winnerTextElement.textContent = '玩家1获胜！';
+        winnerTextElement.classList.add('player1-wins');
+        currentGameScore = score1;
+      } else if (winner === 'player2') {
+        winnerTextElement.textContent = '玩家2获胜！';
+        winnerTextElement.classList.add('player2-wins');
+        currentGameScore = score2;
+      } else {
+        winnerTextElement.textContent = '平局！';
+        winnerTextElement.classList.add('draw');
+        currentGameScore = Math.max(score1, score2);
+      }
+      
+      nameInputSection.style.display = 'none';
+      if (isInTopFive(currentGameScore)) {
+        nameInputSection.style.display = 'flex';
+        playerNameInput.value = '';
+        playerNameInput.focus();
+      }
+    } else {
+      singlePlayerGameOver.style.display = 'flex';
+      multiplayerGameOver.style.display = 'none';
+      gameOverTitle.textContent = '游戏结束';
+      
+      const isNewHighScore = setHighScore(score1);
+      updateHighScoreDisplay();
+      finalScoreElement.textContent = score1;
+      currentGameScore = score1;
+      
+      if (isNewHighScore && finalHighScoreElement) {
+        finalHighScoreElement.textContent = score1;
+      }
+      
+      nameInputSection.style.display = 'none';
+      
+      if (isInTopFive(score1)) {
+        nameInputSection.style.display = 'flex';
+        playerNameInput.value = '';
+        playerNameInput.focus();
+      }
     }
     
     gameOverScreen.style.display = 'flex';
@@ -479,17 +606,45 @@ document.addEventListener('DOMContentLoaded', () => {
 
   let isDirectionKeyDown = false;
 
-  function isDirectionKey(keyCode) {
+  function isPlayer1Key(keyCode) {
     return (
-      keyCode === KEY_CODES.ARROW_UP ||
-      keyCode === KEY_CODES.ARROW_DOWN ||
-      keyCode === KEY_CODES.ARROW_LEFT ||
-      keyCode === KEY_CODES.ARROW_RIGHT ||
       keyCode === KEY_CODES.W ||
       keyCode === KEY_CODES.A ||
       keyCode === KEY_CODES.S ||
       keyCode === KEY_CODES.D
     );
+  }
+
+  function isPlayer2Key(keyCode) {
+    return (
+      keyCode === KEY_CODES.ARROW_UP ||
+      keyCode === KEY_CODES.ARROW_DOWN ||
+      keyCode === KEY_CODES.ARROW_LEFT ||
+      keyCode === KEY_CODES.ARROW_RIGHT
+    );
+  }
+
+  function isDirectionKey(keyCode) {
+    return isPlayer1Key(keyCode) || isPlayer2Key(keyCode);
+  }
+
+  function getDirectionFromKeyCode(keyCode) {
+    switch (keyCode) {
+      case KEY_CODES.ARROW_UP:
+      case KEY_CODES.W:
+        return DIRECTIONS.UP;
+      case KEY_CODES.ARROW_DOWN:
+      case KEY_CODES.S:
+        return DIRECTIONS.DOWN;
+      case KEY_CODES.ARROW_LEFT:
+      case KEY_CODES.A:
+        return DIRECTIONS.LEFT;
+      case KEY_CODES.ARROW_RIGHT:
+      case KEY_CODES.D:
+        return DIRECTIONS.RIGHT;
+      default:
+        return null;
+    }
   }
 
   document.addEventListener('keydown', (e) => {
@@ -501,29 +656,29 @@ document.addEventListener('DOMContentLoaded', () => {
       return;
     }
     
+    const currentMode = getCurrentGameMode();
     let direction = null;
+    let playerNum = 1;
 
-    switch (e.keyCode) {
-      case KEY_CODES.ARROW_UP:
-      case KEY_CODES.W:
-        direction = DIRECTIONS.UP;
-        break;
-      case KEY_CODES.ARROW_DOWN:
-      case KEY_CODES.S:
-        direction = DIRECTIONS.DOWN;
-        break;
-      case KEY_CODES.ARROW_LEFT:
-      case KEY_CODES.A:
-        direction = DIRECTIONS.LEFT;
-        break;
-      case KEY_CODES.ARROW_RIGHT:
-      case KEY_CODES.D:
-        direction = DIRECTIONS.RIGHT;
-        break;
-      case KEY_CODES.SPACE:
-        e.preventDefault();
-        game.togglePause();
-        return;
+    if (e.keyCode === KEY_CODES.SPACE) {
+      e.preventDefault();
+      game.togglePause();
+      return;
+    }
+
+    if (currentMode.id === 'multiplayer') {
+      if (isPlayer1Key(e.keyCode)) {
+        direction = getDirectionFromKeyCode(e.keyCode);
+        playerNum = 1;
+      } else if (isPlayer2Key(e.keyCode)) {
+        direction = getDirectionFromKeyCode(e.keyCode);
+        playerNum = 2;
+      }
+    } else {
+      if (isDirectionKey(e.keyCode)) {
+        direction = getDirectionFromKeyCode(e.keyCode);
+        playerNum = 1;
+      }
     }
 
     if (direction) {
@@ -533,10 +688,11 @@ document.addEventListener('DOMContentLoaded', () => {
         startScreen.style.display = 'none';
         currentGameNormalFoodEaten = 0;
         currentGameAnyFoodEaten = 0;
+        updateScoreContainerDisplay();
       }
       
       game.isDirectionKeyHeld = true;
-      game.handleKeyPress(direction);
+      game.handleKeyPress(direction, playerNum);
     }
   });
 

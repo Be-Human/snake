@@ -29,10 +29,16 @@
           <button class="skin-button" data-skin="minimal">极简</button>
         </div>
         
-        <div class="score-container">
+        <div id="singlePlayerScoreContainer" class="score-container">
           <div><span class="score-label">得分:</span> <span id="score">0</span></div>
           <div><span class="score-label">关卡:</span> <span id="level">1</span></div>
           <div><span class="score-label">最高分:</span> <span id="highScore">0</span></div>
+        </div>
+        
+        <div id="multiplayerScoreContainer" class="score-container multiplayer-score-container" style="display: none;">
+          <div><span class="score-label player1-label">玩家1:</span> <span id="score1" class="player1-score">0</span></div>
+          <div><span class="score-label">关卡:</span> <span id="levelMultiplayer">1</span></div>
+          <div><span class="score-label player2-label">玩家2:</span> <span id="score2" class="player2-score">0</span></div>
         </div>
         
         <div id="activePowerupContainer" class="powerup-container" style="display: none;">
@@ -49,7 +55,21 @@
           
           <div id="startScreen" class="overlay">
             <h2 class="overlay-title">准备开始</h2>
-            <p class="overlay-subtitle">选择难度后点击或按任意方向键开始游戏</p>
+            <p class="overlay-subtitle">选择模式和难度后点击或按任意方向键开始游戏</p>
+            
+            <div class="mode-selector">
+              <div class="mode-label">选择模式：</div>
+              <div class="mode-buttons">
+                <button class="mode-button active" data-mode="single">
+                  <div class="mode-name">单人模式</div>
+                  <div class="mode-desc">经典贪吃蛇游戏</div>
+                </button>
+                <button class="mode-button" data-mode="multiplayer">
+                  <div class="mode-name">双人对战</div>
+                  <div class="mode-desc">两条蛇对战，存活者获胜</div>
+                </button>
+              </div>
+            </div>
             
             <div class="difficulty-selector">
               <div class="difficulty-label">选择难度：</div>
@@ -69,17 +89,33 @@
               </div>
             </div>
             
-            <p class="instructions">
+            <p class="instructions" id="singlePlayerInstructions">
               操作方式：<br>
               <kbd>↑</kbd> <kbd>↓</kbd> <kbd>←</kbd> <kbd>→</kbd> 或 <kbd>W</kbd> <kbd>A</kbd> <kbd>S</kbd> <kbd>D</kbd> 控制方向<br>
               吃到食物得分，速度逐渐加快，撞墙或撞自己游戏结束
             </p>
+            
+            <p class="instructions" id="multiplayerInstructions" style="display: none;">
+              操作方式：<br>
+              <span class="player1-instruction"><kbd>W</kbd> <kbd>A</kbd> <kbd>S</kbd> <kbd>D</kbd> 控制玩家1（绿色）</span><br>
+              <span class="player2-instruction"><kbd>↑</kbd> <kbd>↓</kbd> <kbd>←</kbd> <kbd>→</kbd> 控制玩家2（红色）</span><br>
+              吃到食物得分，撞墙、撞自己或撞对方蛇身即死亡，存活者获胜
+            </p>
           </div>
           
           <div id="gameOverScreen" class="overlay">
-            <h2 class="overlay-title">游戏结束</h2>
-            <p class="final-score">最终得分: <span id="finalScore">0</span></p>
-            <p class="final-score">最高分: <span id="finalHighScore">0</span></p>
+            <h2 class="overlay-title" id="gameOverTitle">游戏结束</h2>
+            
+            <div id="singlePlayerGameOver" class="game-over-content">
+              <p class="final-score">最终得分: <span id="finalScore">0</span></p>
+              <p class="final-score">最高分: <span id="finalHighScore">0</span></p>
+            </div>
+            
+            <div id="multiplayerGameOver" class="game-over-content" style="display: none;">
+              <p class="final-score">玩家1得分: <span id="finalScore1" class="player1-score">0</span></p>
+              <p class="final-score">玩家2得分: <span id="finalScore2" class="player2-score">0</span></p>
+              <p class="winner-text" id="winnerText"></p>
+            </div>
             
             <div id="nameInputSection" class="name-input-section" style="display: none;">
               <p class="congratulations-text">恭喜！你进入了排行榜前5名！</p>

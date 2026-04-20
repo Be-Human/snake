@@ -89,6 +89,60 @@ const KEY_CODES = {
   SPACE: 32
 };
 
+const GAME_MODES = {
+  SINGLE: {
+    id: 'single',
+    name: '单人模式'
+  },
+  MULTIPLAYER: {
+    id: 'multiplayer',
+    name: '双人对战'
+  }
+};
+
+let CURRENT_GAME_MODE = GAME_MODES.SINGLE;
+
+function getCurrentGameMode() {
+  return CURRENT_GAME_MODE;
+}
+
+function setCurrentGameMode(modeId) {
+  for (const modeKey in GAME_MODES) {
+    if (GAME_MODES[modeKey].id === modeId) {
+      CURRENT_GAME_MODE = GAME_MODES[modeKey];
+      return true;
+    }
+  }
+  return false;
+}
+
+const PLAYER_CONFIGS = {
+  PLAYER1: {
+    id: 'player1',
+    name: '玩家1',
+    initialPosition: { x: 10, y: 10 },
+    initialDirection: DIRECTIONS.RIGHT,
+    controlKeys: {
+      UP: KEY_CODES.W,
+      DOWN: KEY_CODES.S,
+      LEFT: KEY_CODES.A,
+      RIGHT: KEY_CODES.D
+    }
+  },
+  PLAYER2: {
+    id: 'player2',
+    name: '玩家2',
+    initialPosition: { x: 10, y: 8 },
+    initialDirection: DIRECTIONS.LEFT,
+    controlKeys: {
+      UP: KEY_CODES.ARROW_UP,
+      DOWN: KEY_CODES.ARROW_DOWN,
+      LEFT: KEY_CODES.ARROW_LEFT,
+      RIGHT: KEY_CODES.ARROW_RIGHT
+    }
+  }
+};
+
 const LEVEL_UP_SCORE = 100;
 
 const DIFFICULTIES = {

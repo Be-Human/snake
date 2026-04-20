@@ -1,16 +1,22 @@
 class Snake {
-  constructor() {
+  constructor(playerConfig = null) {
+    this.playerConfig = playerConfig || PLAYER_CONFIGS.PLAYER1;
+    this.playerId = this.playerConfig.id;
     this.reset();
   }
 
   reset() {
+    const config = this.playerConfig;
+    const head = config.initialPosition;
+    const dir = config.initialDirection;
+    
     this.body = [
-      { x: 10, y: 10 },
-      { x: 9, y: 10 },
-      { x: 8, y: 10 }
+      { x: head.x, y: head.y },
+      { x: head.x - dir.x, y: head.y - dir.y },
+      { x: head.x - 2 * dir.x, y: head.y - 2 * dir.y }
     ];
-    this.direction = DIRECTIONS.RIGHT;
-    this.nextDirection = DIRECTIONS.RIGHT;
+    this.direction = dir;
+    this.nextDirection = dir;
     this.growNext = false;
   }
 
@@ -84,18 +90,31 @@ class Snake {
     return head.x === foodPosition.x && head.y === foodPosition.y;
   }
 
+  getPlayerColors() {
+    if (this.playerId === 'player1') {
+      return getSkinColors();
+    } else {
+      const skinColors = getSkinColors();
+      return {
+        ...skinColors,
+        SNAKE_HEAD: '#ff6b6b',
+        SNAKE_BODY: '#cc5555'
+      };
+    }
+  }
+
   draw(ctx, gridSize) {
     const stage = getSnakeGrowthStage(this.body.length);
-    const skinColors = getSkinColors();
+    const playerColors = this.getPlayerColors();
     
     this.body.forEach((segment, index) => {
       const isHead = index === 0;
       let fillColor;
       
       if (isHead) {
-        fillColor = getStageHeadColor(stage, skinColors);
+        fillColor = getStageHeadColor(stage, playerColors);
       } else {
-        fillColor = getStageBodyColor(stage, skinColors, index);
+        fillColor = getStageBodyColor(stage, playerColors, index);
       }
       
       ctx.fillStyle = fillColor;
