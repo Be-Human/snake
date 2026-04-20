@@ -691,14 +691,33 @@ document.addEventListener('DOMContentLoaded', () => {
         updateScoreContainerDisplay();
       }
       
-      game.isDirectionKeyHeld = true;
+      if (currentMode.id === 'multiplayer') {
+        if (playerNum === 1) {
+          game.isDirectionKeyHeld1 = true;
+        } else {
+          game.isDirectionKeyHeld2 = true;
+        }
+      } else {
+        game.isDirectionKeyHeld = true;
+      }
+      
       game.handleKeyPress(direction, playerNum);
     }
   });
 
   document.addEventListener('keyup', (e) => {
+    const currentMode = getCurrentGameMode();
+    
     if (isDirectionKey(e.keyCode)) {
-      game.isDirectionKeyHeld = false;
+      if (currentMode.id === 'multiplayer') {
+        if (isPlayer1Key(e.keyCode)) {
+          game.isDirectionKeyHeld1 = false;
+        } else if (isPlayer2Key(e.keyCode)) {
+          game.isDirectionKeyHeld2 = false;
+        }
+      } else {
+        game.isDirectionKeyHeld = false;
+      }
     }
   });
 

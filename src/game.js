@@ -47,6 +47,11 @@ class Game {
     this.keysPressed = {};
     this.isDirectionKeyHeld = false;
     this.baseSpeedBeforeHoldBoost = 0;
+    
+    this.isDirectionKeyHeld1 = false;
+    this.isDirectionKeyHeld2 = false;
+    this.lastMoveTime1 = 0;
+    this.lastMoveTime2 = 0;
   }
 
   init() {
@@ -92,6 +97,11 @@ class Game {
     this.keysPressed = {};
     this.isDirectionKeyHeld = false;
     this.baseSpeedBeforeHoldBoost = 0;
+    
+    this.isDirectionKeyHeld1 = false;
+    this.isDirectionKeyHeld2 = false;
+    this.lastMoveTime1 = 0;
+    this.lastMoveTime2 = 0;
     
     if (this.onScoreUpdate) {
       this.onScoreUpdate(this.score);
@@ -276,17 +286,26 @@ class Game {
       return;
     }
     
-    if (this.isDirectionKeyHeld && !this.isSpeedBoostActive) {
-      if (this.baseSpeedBeforeHoldBoost === 0) {
-        this.baseSpeedBeforeHoldBoost = this.gameSpeed;
+    const currentMode = this.gameMode;
+    let effectiveGameSpeed = this.gameSpeed;
+    
+    if (currentMode.id === 'multiplayer') {
+      effectiveGameSpeed = this.gameSpeed;
+    } else {
+      if (this.isDirectionKeyHeld && !this.isSpeedBoostActive) {
+        if (this.baseSpeedBeforeHoldBoost === 0) {
+          this.baseSpeedBeforeHoldBoost = this.gameSpeed;
+        }
+        this.gameSpeed = Math.min(this.baseSpeedBeforeHoldBoost * 1.5, MAX_SPEED * 1.5);
+        effectiveGameSpeed = this.gameSpeed;
+      } else if (!this.isDirectionKeyHeld && this.baseSpeedBeforeHoldBoost !== 0) {
+        this.gameSpeed = this.baseSpeedBeforeHoldBoost;
+        this.baseSpeedBeforeHoldBoost = 0;
+        effectiveGameSpeed = this.gameSpeed;
       }
-      this.gameSpeed = Math.min(this.baseSpeedBeforeHoldBoost * 1.5, MAX_SPEED * 1.5);
-    } else if (!this.isDirectionKeyHeld && this.baseSpeedBeforeHoldBoost !== 0) {
-      this.gameSpeed = this.baseSpeedBeforeHoldBoost;
-      this.baseSpeedBeforeHoldBoost = 0;
     }
     
-    if (secondsSinceLastRender < 1 / this.gameSpeed) return;
+    if (secondsSinceLastRender < 1 / effectiveGameSpeed) return;
 
     this.lastRenderTime = currentTime;
 
@@ -320,12 +339,51 @@ class Game {
 
     if (this.gameMode.id === 'multiplayer') {
       this.checkMultiplayerCollision();
+      if (this.isGameOver) return;
+      
+      if (this.isDirectionKeyHeld1 || this.isDirectionKeyHeld2) {
+        this.updateMultiplayerExtraMove(currentTime);
+      }
     } else {
       const hitObstacle = this.checkObstacleCollision(this.snake);
       
       if (this.snake.checkCollision() || (hitObstacle && !this.isGoldenBodyActive && !this.isWeaponActive)) {
         this.gameOver();
       }
+    }
+  }
+
+  updateMultiplayerExtraMove(currentTime) {
+    if (this.isDirectionKeyHeld1 && !this.isGameOver) {
+      this.snake.move();
+      
+      for (let i = this.foods.length - 1; i >= 0; i--) {
+        const food = this.foods[i];
+        if (this.snake.checkFoodCollision(food.position)) {
+          this.handleFoodCollision(food, currentTime, this.snake, 1);
+        }
+      }
+      
+      if (this.powerup && this.snake.checkFoodCollision(this.powerup.position)) {
+        this.handlePowerupCollision(this.powerup, currentTime);
+      }
+      
+      this.checkMultiplayerCollision();
+      if (this.isGameOver) return;
+    }
+    
+    if (this.isDirectionKeyHeld2 && !this.isGameOver && this.snake2) {
+      this.snake2.move();
+      
+      for (let i = this.foods.length - 1; i >= 0; i--) {
+        const food = this.foods[i];
+        if (this.snake2.checkFoodCollision(food.position)) {
+          this.handleFoodCollision(food, currentTime, this.snake2, 2);
+        }
+      }
+      
+      this.checkMultiplayerCollision();
+      if (this.isGameOver) return;
     }
   }
 
