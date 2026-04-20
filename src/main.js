@@ -41,6 +41,11 @@ document.addEventListener('DOMContentLoaded', () => {
   const winnerTextElement = document.getElementById('winnerText');
   const gameOverTitle = document.getElementById('gameOverTitle');
   
+  const timeContainer = document.getElementById('timeContainer');
+  const timeElement = document.getElementById('time');
+  const survivalTimeSection = document.getElementById('survivalTimeSection');
+  const survivalTimeElement = document.getElementById('survivalTime');
+  
   let powerupTimerInterval = null;
   
   let currentWinner = null;
@@ -220,9 +225,24 @@ document.addEventListener('DOMContentLoaded', () => {
     if (currentMode.id === 'multiplayer') {
       if (singlePlayerScoreContainer) singlePlayerScoreContainer.style.display = 'none';
       if (multiplayerScoreContainer) multiplayerScoreContainer.style.display = 'flex';
+      if (timeContainer) timeContainer.style.display = 'none';
     } else {
       if (singlePlayerScoreContainer) singlePlayerScoreContainer.style.display = 'flex';
       if (multiplayerScoreContainer) multiplayerScoreContainer.style.display = 'none';
+    }
+  }
+  
+  function updateTimeDisplay(remainingTime) {
+    if (timeElement) {
+      timeElement.textContent = remainingTime;
+    }
+    
+    if (timeElement) {
+      if (remainingTime <= TIMED_MODE_CONFIG.WARNING_TIME_THRESHOLD) {
+        timeElement.classList.add('time-warning');
+      } else {
+        timeElement.classList.remove('time-warning');
+      }
     }
   }
 
@@ -537,7 +557,11 @@ document.addEventListener('DOMContentLoaded', () => {
     hideActivePowerup();
   };
 
-  game.onGameOver = (score1, score2, winner) => {
+  game.onTimeUpdate = (remainingTime) => {
+    updateTimeDisplay(remainingTime);
+  };
+
+  game.onGameOver = (score1, score2, winner, isTimedMode = false, totalSurvivalTime = 0) => {
     const currentMode = getCurrentGameMode();
     gamesPlayed = incrementGamesPlayed();
     checkAchievements();
@@ -576,7 +600,12 @@ document.addEventListener('DOMContentLoaded', () => {
     } else {
       singlePlayerGameOver.style.display = 'flex';
       multiplayerGameOver.style.display = 'none';
-      gameOverTitle.textContent = '游戏结束';
+      
+      if (isTimedMode) {
+        gameOverTitle.textContent = '时间到！';
+      } else {
+        gameOverTitle.textContent = '游戏结束';
+      }
       
       const isNewHighScore = setHighScore(score1);
       updateHighScoreDisplay();
@@ -587,6 +616,13 @@ document.addEventListener('DOMContentLoaded', () => {
         finalHighScoreElement.textContent = score1;
       }
       
+      if (isTimedMode && survivalTimeSection && survivalTimeElement) {
+        survivalTimeSection.style.display = 'block';
+        survivalTimeElement.textContent = totalSurvivalTime;
+      } else if (survivalTimeSection) {
+        survivalTimeSection.style.display = 'none';
+      }
+      
       nameInputSection.style.display = 'none';
       
       if (isInTopFive(score1)) {
@@ -594,6 +630,10 @@ document.addEventListener('DOMContentLoaded', () => {
         playerNameInput.value = '';
         playerNameInput.focus();
       }
+    }
+    
+    if (timeContainer) {
+      timeContainer.style.display = 'none';
     }
     
     gameOverScreen.style.display = 'flex';
@@ -702,6 +742,10 @@ document.addEventListener('DOMContentLoaded', () => {
         currentGameNormalFoodEaten = 0;
         currentGameAnyFoodEaten = 0;
         updateScoreContainerDisplay();
+        
+        if (currentMode.id === 'timed' && timeContainer) {
+          timeContainer.style.display = 'flex';
+        }
       }
       
       if (currentMode.id === 'multiplayer') {
@@ -743,6 +787,12 @@ document.addEventListener('DOMContentLoaded', () => {
     startScreen.style.display = 'none';
     currentGameNormalFoodEaten = 0;
     currentGameAnyFoodEaten = 0;
+    
+    const currentMode = getCurrentGameMode();
+    if (currentMode.id === 'timed' && timeContainer) {
+      timeContainer.style.display = 'flex';
+    }
+    
     game.restart();
     updateHighScoreDisplay();
     
@@ -772,6 +822,12 @@ document.addEventListener('DOMContentLoaded', () => {
     startScreen.style.display = 'none';
     currentGameNormalFoodEaten = 0;
     currentGameAnyFoodEaten = 0;
+    
+    const currentMode = getCurrentGameMode();
+    if (currentMode.id === 'timed' && timeContainer) {
+      timeContainer.style.display = 'flex';
+    }
+    
     game.start();
   });
 });

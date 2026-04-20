@@ -33,6 +33,9 @@
           <div><span class="score-label">得分:</span> <span id="score">0</span></div>
           <div><span class="score-label">关卡:</span> <span id="level">1</span></div>
           <div><span class="score-label">最高分:</span> <span id="highScore">0</span></div>
+          <div id="timeContainer" class="time-container" style="display: none;">
+            <span class="score-label">剩余时间:</span> <span id="time" class="time-display">60</span><span class="time-unit">s</span>
+          </div>
         </div>
         
         <div id="multiplayerScoreContainer" class="score-container multiplayer-score-container" style="display: none;">
@@ -63,6 +66,10 @@
                 <button class="mode-button active" data-mode="single">
                   <div class="mode-name">单人模式</div>
                   <div class="mode-desc">经典贪吃蛇游戏</div>
+                </button>
+                <button class="mode-button" data-mode="timed">
+                  <div class="mode-name">限时模式</div>
+                  <div class="mode-desc">60秒倒计时，吃食物增加时间</div>
                 </button>
                 <button class="mode-button" data-mode="multiplayer">
                   <div class="mode-name">双人对战</div>
@@ -111,6 +118,7 @@
             <div id="singlePlayerGameOver" class="game-over-content">
               <p class="final-score">最终得分: <span id="finalScore">0</span></p>
               <p class="final-score">最高分: <span id="finalHighScore">0</span></p>
+              <p id="survivalTimeSection" class="final-score" style="display: none;">存活时间: <span id="survivalTime">0</span>秒</p>
             </div>
             
             <div id="multiplayerGameOver" class="game-over-content" style="display: none;">

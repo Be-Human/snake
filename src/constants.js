@@ -97,7 +97,19 @@ const GAME_MODES = {
   MULTIPLAYER: {
     id: 'multiplayer',
     name: '双人对战'
+  },
+  TIMED: {
+    id: 'timed',
+    name: '限时模式'
   }
+};
+
+const TIMED_MODE_CONFIG = {
+  INITIAL_TIME: 60,
+  NORMAL_FOOD_TIME_BONUS: 3,
+  GOLDEN_FOOD_TIME_BONUS: 5,
+  POISON_TIME_PENALTY: 5,
+  WARNING_TIME_THRESHOLD: 10
 };
 
 let CURRENT_GAME_MODE = GAME_MODES.SINGLE;
