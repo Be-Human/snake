@@ -123,30 +123,58 @@ class Snake {
   drawEyes(ctx, head, gridSize, stage) {
     const eyeSize = gridSize / 4;
     const pupilSize = eyeSize / 2;
+    const headX = head.x * gridSize;
+    const headY = head.y * gridSize;
     
-    const leftEyeX = head.x * gridSize + gridSize / 3;
-    const rightEyeX = head.x * gridSize + gridSize * 2 / 3;
-    const eyeY = head.y * gridSize + gridSize / 3;
+    let eye1X, eye1Y, eye2X, eye2Y;
+    let pupilOffsetX, pupilOffsetY;
+    
+    if (this.direction.x === 1) {
+      eye1X = headX + gridSize * 0.75;
+      eye1Y = headY + gridSize * 0.3;
+      eye2X = headX + gridSize * 0.75;
+      eye2Y = headY + gridSize * 0.7;
+      pupilOffsetX = eyeSize / 3;
+      pupilOffsetY = 0;
+    } else if (this.direction.x === -1) {
+      eye1X = headX + gridSize * 0.25;
+      eye1Y = headY + gridSize * 0.3;
+      eye2X = headX + gridSize * 0.25;
+      eye2Y = headY + gridSize * 0.7;
+      pupilOffsetX = -eyeSize / 3;
+      pupilOffsetY = 0;
+    } else if (this.direction.y === 1) {
+      eye1X = headX + gridSize * 0.3;
+      eye1Y = headY + gridSize * 0.75;
+      eye2X = headX + gridSize * 0.7;
+      eye2Y = headY + gridSize * 0.75;
+      pupilOffsetX = 0;
+      pupilOffsetY = eyeSize / 3;
+    } else {
+      eye1X = headX + gridSize * 0.3;
+      eye1Y = headY + gridSize * 0.25;
+      eye2X = headX + gridSize * 0.7;
+      eye2Y = headY + gridSize * 0.25;
+      pupilOffsetX = 0;
+      pupilOffsetY = -eyeSize / 3;
+    }
     
     ctx.fillStyle = stage.eyeColor;
     ctx.beginPath();
-    ctx.arc(leftEyeX, eyeY, eyeSize, 0, Math.PI * 2);
+    ctx.arc(eye1X, eye1Y, eyeSize, 0, Math.PI * 2);
     ctx.fill();
     
     ctx.beginPath();
-    ctx.arc(rightEyeX, eyeY, eyeSize, 0, Math.PI * 2);
+    ctx.arc(eye2X, eye2Y, eyeSize, 0, Math.PI * 2);
     ctx.fill();
     
     ctx.fillStyle = stage.pupilColor;
-    const pupilOffsetX = this.direction.x * (eyeSize / 3);
-    const pupilOffsetY = this.direction.y * (eyeSize / 3);
-    
     ctx.beginPath();
-    ctx.arc(leftEyeX + pupilOffsetX, eyeY + pupilOffsetY, pupilSize, 0, Math.PI * 2);
+    ctx.arc(eye1X + pupilOffsetX, eye1Y + pupilOffsetY, pupilSize, 0, Math.PI * 2);
     ctx.fill();
     
     ctx.beginPath();
-    ctx.arc(rightEyeX + pupilOffsetX, eyeY + pupilOffsetY, pupilSize, 0, Math.PI * 2);
+    ctx.arc(eye2X + pupilOffsetX, eye2Y + pupilOffsetY, pupilSize, 0, Math.PI * 2);
     ctx.fill();
   }
 }
