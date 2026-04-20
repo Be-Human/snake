@@ -7,6 +7,7 @@ document.addEventListener('DOMContentLoaded', () => {
   const finalScoreElement = document.getElementById('finalScore');
   const finalHighScoreElement = document.getElementById('finalHighScore');
   const restartButton = document.getElementById('restartButton');
+  const backToMenuButton = document.getElementById('backToMenuButton');
   const startScreen = document.getElementById('startScreen');
   const leaderboardElement = document.getElementById('leaderboard');
   const nameInputSection = document.getElementById('nameInputSection');
@@ -738,6 +739,22 @@ document.addEventListener('DOMContentLoaded', () => {
       highlightedRank = null;
     }
   });
+
+  if (backToMenuButton) {
+    backToMenuButton.addEventListener('click', () => {
+      gameOverScreen.style.display = 'none';
+      startScreen.style.display = 'flex';
+      currentGameNormalFoodEaten = 0;
+      currentGameAnyFoodEaten = 0;
+      
+      if (highlightedRank !== null) {
+        renderLeaderboard();
+        highlightedRank = null;
+      }
+      
+      updateScoreContainerDisplay();
+    });
+  }
 
   startScreen.addEventListener('click', () => {
     startScreen.style.display = 'none';
