@@ -58,6 +58,8 @@ class Game {
     this.remainingTime = 0;
     this.lastTimeCheck = 0;
     this.totalSurvivalTime = 0;
+    
+    this.particleSystem = new ParticleSystem();
   }
 
   init() {
@@ -85,7 +87,12 @@ class Game {
       this.snake2 = null;
     }
     
-    this.obstacles = [];
+    const currentMap = getCurrentMap();
+    if (currentMap.hasPresetObstacles) {
+      this.obstacles = [...currentMap.obstacles];
+    } else {
+      this.obstacles = [];
+    }
     this.generateAllFoods(0);
     
     this.poisonFlashStartTime = 0;
@@ -113,6 +120,10 @@ class Game {
     this.remainingTime = this.isTimedMode ? TIMED_MODE_CONFIG.INITIAL_TIME : 0;
     this.lastTimeCheck = 0;
     this.totalSurvivalTime = 0;
+    
+    if (this.particleSystem) {
+      this.particleSystem.clear();
+    }
     
     if (this.onScoreUpdate) {
       this.onScoreUpdate(this.score);
@@ -423,6 +434,10 @@ class Game {
   }
 
   handleFoodCollision(food, currentTime, snake, playerNum) {
+    const foodColor = getFoodColor(food.type.id);
+    const foodPosition = { ...food.position };
+    const scoreValue = food.type.score;
+    
     if (this.isTimedMode) {
       let timeChange = 0;
       if (food.type.id === FOOD_TYPES.NORMAL.id) {
@@ -482,6 +497,11 @@ class Game {
     }
     
     this.replaceFood(food, currentTime);
+    
+    if (this.particleSystem) {
+      this.particleSystem.createExplosion(foodPosition.x, foodPosition.y, foodColor, this.gridSize);
+      this.particleSystem.createScoreFloat(foodPosition.x, foodPosition.y, scoreValue, foodColor);
+    }
     
     if (this.onFoodEaten) {
       this.onFoodEaten(food.type);
@@ -554,9 +574,12 @@ class Game {
   checkLevelUp() {
     const newLevel = Math.floor(this.score / LEVEL_UP_SCORE) + 1;
     if (newLevel > this.level) {
-      const levelsToAdd = newLevel - this.level;
-      for (let i = 0; i < levelsToAdd; i++) {
-        this.addObstacles();
+      const currentMap = getCurrentMap();
+      if (currentMap.levelUpAddsObstacles) {
+        const levelsToAdd = newLevel - this.level;
+        for (let i = 0; i < levelsToAdd; i++) {
+          this.addObstacles();
+        }
       }
       this.level = newLevel;
       if (this.onLevelUpdate) {
@@ -618,6 +641,11 @@ class Game {
     this.snake.draw(this.ctx, this.gridSize);
     if (this.snake2) {
       this.snake2.draw(this.ctx, this.gridSize);
+    }
+    
+    if (this.particleSystem) {
+      this.particleSystem.update();
+      this.particleSystem.draw(this.ctx, this.gridSize);
     }
     
     this.drawPoisonFlash(currentTime);

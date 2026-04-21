@@ -19,6 +19,8 @@ document.addEventListener('DOMContentLoaded', () => {
   const skinButtons = document.querySelectorAll('.skin-button');
   const difficultyButtons = document.querySelectorAll('.difficulty-button');
   const modeButtons = document.querySelectorAll('.mode-button');
+  const mapButtons = document.querySelectorAll('.map-button');
+  const mapSelector = document.getElementById('mapSelector');
   
   const activePowerupContainer = document.getElementById('activePowerupContainer');
   const activePowerupIcon = document.getElementById('activePowerupIcon');
@@ -163,6 +165,39 @@ document.addEventListener('DOMContentLoaded', () => {
     });
   });
 
+  function applyMap(mapId) {
+    if (!setCurrentMap(mapId)) {
+      return;
+    }
+
+    mapButtons.forEach(btn => {
+      if (btn.dataset.map === mapId) {
+        btn.classList.add('active');
+      } else {
+        btn.classList.remove('active');
+      }
+    });
+
+    localStorage.setItem('snakeMap', mapId);
+  }
+
+  function loadSavedMap() {
+    const savedMap = localStorage.getItem('snakeMap');
+    if (savedMap) {
+      applyMap(savedMap);
+    } else {
+      applyMap('classic');
+    }
+  }
+
+  mapButtons.forEach(button => {
+    button.addEventListener('click', (e) => {
+      e.stopPropagation();
+      const mapId = button.dataset.map;
+      applyMap(mapId);
+    });
+  });
+
   function applyGameMode(modeId) {
     if (!setCurrentGameMode(modeId)) {
       return;
@@ -187,6 +222,9 @@ document.addEventListener('DOMContentLoaded', () => {
         multiplayerInstructions.style.opacity = '1';
         multiplayerInstructions.style.visibility = 'visible';
       }
+      if (mapSelector) {
+        mapSelector.style.display = 'none';
+      }
     } else {
       if (singlePlayerInstructions) {
         singlePlayerInstructions.style.opacity = '1';
@@ -195,6 +233,9 @@ document.addEventListener('DOMContentLoaded', () => {
       if (multiplayerInstructions) {
         multiplayerInstructions.style.opacity = '0';
         multiplayerInstructions.style.visibility = 'hidden';
+      }
+      if (mapSelector) {
+        mapSelector.style.display = 'flex';
       }
     }
 
@@ -508,6 +549,7 @@ document.addEventListener('DOMContentLoaded', () => {
   loadSavedSkin();
   loadSavedDifficulty();
   loadSavedGameMode();
+  loadSavedMap();
   updateScoreContainerDisplay();
 
   updateHighScoreDisplay();

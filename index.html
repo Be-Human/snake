@@ -99,6 +99,24 @@
               </div>
             </div>
             
+            <div id="mapSelector" class="map-selector">
+              <div class="map-label">选择地图：</div>
+              <div class="map-buttons">
+                <button class="map-button active" data-map="classic">
+                  <div class="map-name">经典</div>
+                  <div class="map-desc">无预设障碍，随关卡增加</div>
+                </button>
+                <button class="map-button" data-map="border">
+                  <div class="map-name">边框</div>
+                  <div class="map-desc">四周有边框障碍物</div>
+                </button>
+                <button class="map-button" data-map="maze">
+                  <div class="map-name">迷宫</div>
+                  <div class="map-desc">预设迷宫障碍物布局</div>
+                </button>
+              </div>
+            </div>
+            
             <div class="instructions-container">
               <p class="instructions" id="singlePlayerInstructions">
                 操作方式：<br>
@@ -194,6 +212,7 @@
   <script src="src/food.js"></script>
   <script src="src/powerup.js"></script>
   <script src="src/snake.js"></script>
+  <script src="src/particles.js"></script>
   <script src="src/game.js"></script>
   <script src="src/main.js"></script>
 </body>
