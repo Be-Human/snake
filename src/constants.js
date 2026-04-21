@@ -417,6 +417,79 @@ function adjustColorBrightness(hex, amount) {
   return '#' + (0x1000000 + (r << 16) + (g << 8) + b).toString(16).slice(1);
 }
 
+const MAP_TYPES = {
+  CLASSIC: {
+    id: 'classic',
+    name: '经典',
+    description: '无预设障碍物，随关卡增加障碍',
+    hasPresetObstacles: false,
+    obstacles: [],
+    levelUpAddsObstacles: true
+  },
+  BORDER: {
+    id: 'border',
+    name: '边框',
+    description: '四周有边框障碍物',
+    hasPresetObstacles: true,
+    obstacles: (() => {
+      const obstacles = [];
+      for (let i = 0; i < TILE_COUNT; i++) {
+        obstacles.push({ x: i, y: 0 });
+        obstacles.push({ x: i, y: TILE_COUNT - 1 });
+        obstacles.push({ x: 0, y: i });
+        obstacles.push({ x: TILE_COUNT - 1, y: i });
+      }
+      return obstacles;
+    })(),
+    levelUpAddsObstacles: false
+  },
+  MAZE: {
+    id: 'maze',
+    name: '迷宫',
+    description: '预设迷宫障碍物布局',
+    hasPresetObstacles: true,
+    obstacles: (() => {
+      const obstacles = [];
+      for (let i = 0; i < TILE_COUNT; i++) {
+        obstacles.push({ x: i, y: 0 });
+        obstacles.push({ x: i, y: TILE_COUNT - 1 });
+        obstacles.push({ x: 0, y: i });
+        obstacles.push({ x: TILE_COUNT - 1, y: i });
+      }
+      for (let i = 5; i < 10; i++) {
+        obstacles.push({ x: i, y: 5 });
+      }
+      for (let i = 10; i < 15; i++) {
+        obstacles.push({ x: i, y: 14 });
+      }
+      for (let i = 3; i < 8; i++) {
+        obstacles.push({ x: 5, y: i });
+      }
+      for (let i = 12; i < 17; i++) {
+        obstacles.push({ x: 14, y: i });
+      }
+      return obstacles;
+    })(),
+    levelUpAddsObstacles: false
+  }
+};
+
+let CURRENT_MAP = MAP_TYPES.CLASSIC;
+
+function getCurrentMap() {
+  return CURRENT_MAP;
+}
+
+function setCurrentMap(mapId) {
+  for (const mapKey in MAP_TYPES) {
+    if (MAP_TYPES[mapKey].id === mapId) {
+      CURRENT_MAP = MAP_TYPES[mapKey];
+      return true;
+    }
+  }
+  return false;
+}
+
 const COLORS = {
   get BACKGROUND() { return getSkinColors().BACKGROUND; },
   get GRID() { return getSkinColors().GRID; },

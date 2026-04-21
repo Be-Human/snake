@@ -247,6 +247,86 @@ body {
   opacity: 0.9;
 }
 
+.map-selector {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+  margin: 5px 0;
+}
+
+.map-label {
+  font-size: 0.95rem;
+  font-weight: bold;
+  color: var(--primary-color);
+  text-shadow: 0 0 5px var(--primary-color-rgba, rgba(0, 255, 136, 0.5));
+}
+
+.map-buttons {
+  display: flex;
+  gap: 8px;
+}
+
+.map-button {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 6px 10px;
+  min-width: 95px;
+  font-size: 0.85rem;
+  color: var(--text-color);
+  background-color: transparent;
+  border: 2px solid var(--primary-color);
+  border-radius: 8px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  opacity: 0.85;
+}
+
+.map-button:hover {
+  background-color: var(--primary-color-rgba-verylight, rgba(0, 255, 136, 0.1));
+  box-shadow: 0 0 15px var(--primary-color-rgba-light, rgba(0, 255, 136, 0.3));
+  opacity: 1;
+  transform: translateY(-2px);
+}
+
+.map-button.active {
+  background-color: var(--primary-color);
+  color: var(--body-bg);
+  box-shadow: 0 0 20px var(--primary-color-rgba, rgba(0, 255, 136, 0.5));
+  opacity: 1;
+  transform: scale(1.05);
+  animation: mapPulse 2s infinite;
+}
+
+@keyframes mapPulse {
+  0% {
+    box-shadow: 0 0 20px var(--primary-color-rgba, rgba(0, 255, 136, 0.5));
+  }
+  50% {
+    box-shadow: 0 0 35px var(--primary-color-rgba, rgba(0, 255, 136, 0.8));
+  }
+  100% {
+    box-shadow: 0 0 20px var(--primary-color-rgba, rgba(0, 255, 136, 0.5));
+  }
+}
+
+.map-name {
+  font-size: 0.95rem;
+  font-weight: bold;
+  margin-bottom: 3px;
+}
+
+.map-desc {
+  font-size: 0.7rem;
+  opacity: 0.8;
+  line-height: 1.2;
+}
+
+.map-button.active .map-desc {
+  opacity: 0.9;
+}
+
 .leaderboard-section {
   display: flex;
   flex-direction: column;
