@@ -61,74 +61,47 @@
           
           <div id="startScreen" class="overlay">
             <h2 class="overlay-title">准备开始</h2>
-            <p class="overlay-subtitle">选择模式和难度后点击或按任意方向键开始游戏</p>
+            <p class="overlay-subtitle">选择模式后点击或按任意方向键开始游戏</p>
             
-            <div class="mode-selector">
-              <div class="mode-label">选择模式：</div>
-              <div class="mode-buttons">
-                <button class="mode-button active" data-mode="single">
-                  <div class="mode-name">单人模式</div>
-                  <div class="mode-desc">经典贪吃蛇游戏</div>
-                </button>
-                <button class="mode-button" data-mode="timed">
-                  <div class="mode-name">限时模式</div>
-                  <div class="mode-desc">60秒倒计时，吃食物增加时间</div>
-                </button>
-                <button class="mode-button" data-mode="multiplayer">
-                  <div class="mode-name">双人对战</div>
-                  <div class="mode-desc">两条蛇对战，存活者获胜</div>
-                </button>
+            <div class="compact-selector">
+              <div class="selector-row">
+                <span class="selector-label">模式：</span>
+                <div class="selector-buttons">
+                  <button class="compact-button active" data-mode="single">单人</button>
+                  <button class="compact-button" data-mode="timed">限时</button>
+                  <button class="compact-button" data-mode="multiplayer">双人</button>
+                </div>
               </div>
-            </div>
-            
-            <div class="difficulty-selector">
-              <div class="difficulty-label">选择难度：</div>
-              <div class="difficulty-buttons">
-                <button class="difficulty-button" data-difficulty="easy">
-                  <div class="difficulty-name">简单</div>
-                  <div class="difficulty-desc">慢速 · 少障碍 · 无毒药</div>
-                </button>
-                <button class="difficulty-button active" data-difficulty="normal">
-                  <div class="difficulty-name">普通</div>
-                  <div class="difficulty-desc">中速 · 中等障碍 · 有毒药</div>
-                </button>
-                <button class="difficulty-button" data-difficulty="hard">
-                  <div class="difficulty-name">困难</div>
-                  <div class="difficulty-desc">快速 · 多障碍 · 有毒药</div>
-                </button>
+              
+              <div class="selector-row">
+                <span class="selector-label">难度：</span>
+                <div class="selector-buttons">
+                  <button class="compact-button" data-difficulty="easy">简单</button>
+                  <button class="compact-button active" data-difficulty="normal">普通</button>
+                  <button class="compact-button" data-difficulty="hard">困难</button>
+                </div>
               </div>
-            </div>
-            
-            <div id="mapSelector" class="map-selector">
-              <div class="map-label">选择地图：</div>
-              <div class="map-buttons">
-                <button class="map-button active" data-map="classic">
-                  <div class="map-name">经典</div>
-                  <div class="map-desc">无预设障碍，随关卡增加</div>
-                </button>
-                <button class="map-button" data-map="border">
-                  <div class="map-name">边框</div>
-                  <div class="map-desc">四周有边框障碍物</div>
-                </button>
-                <button class="map-button" data-map="maze">
-                  <div class="map-name">迷宫</div>
-                  <div class="map-desc">预设迷宫障碍物布局</div>
-                </button>
+              
+              <div id="mapSelectorRow" class="selector-row">
+                <span class="selector-label">地图：</span>
+                <div class="selector-buttons">
+                  <button class="compact-button active" data-map="classic">经典</button>
+                  <button class="compact-button" data-map="border">边框</button>
+                  <button class="compact-button" data-map="maze">迷宫</button>
+                </div>
               </div>
             </div>
             
             <div class="instructions-container">
               <p class="instructions" id="singlePlayerInstructions">
-                操作方式：<br>
-                <kbd>↑</kbd> <kbd>↓</kbd> <kbd>←</kbd> <kbd>→</kbd> 或 <kbd>W</kbd> <kbd>A</kbd> <kbd>S</kbd> <kbd>D</kbd> 控制方向<br>
-                吃到食物得分，速度逐渐加快，撞墙或撞自己游戏结束
+                操作：<kbd>↑↓←→</kbd> 或 <kbd>WASD</kbd> 控制方向<br>
+                吃食物得分，撞墙或撞自己结束
               </p>
               
               <p class="instructions" id="multiplayerInstructions" style="opacity: 0; visibility: hidden;">
-                操作方式：<br>
-                <span class="player1-instruction"><kbd>W</kbd> <kbd>A</kbd> <kbd>S</kbd> <kbd>D</kbd> 控制玩家1（绿色）</span><br>
-                <span class="player2-instruction"><kbd>↑</kbd> <kbd>↓</kbd> <kbd>←</kbd> <kbd>→</kbd> 控制玩家2（红色）</span><br>
-                吃到食物得分，撞墙、撞自己或撞对方蛇身即死亡，存活者获胜
+                玩家1：<kbd>WASD</kbd><br>
+                玩家2：<kbd>↑↓←→</kbd><br>
+                撞墙、撞自己或对方即死亡
               </p>
             </div>
           </div>

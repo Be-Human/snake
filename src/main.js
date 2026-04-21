@@ -17,10 +17,10 @@ document.addEventListener('DOMContentLoaded', () => {
   const achievementNotification = document.getElementById('achievementNotification');
   const achievementNameElement = document.getElementById('achievementName');
   const skinButtons = document.querySelectorAll('.skin-button');
-  const difficultyButtons = document.querySelectorAll('.difficulty-button');
-  const modeButtons = document.querySelectorAll('.mode-button');
-  const mapButtons = document.querySelectorAll('.map-button');
-  const mapSelector = document.getElementById('mapSelector');
+  const difficultyButtons = document.querySelectorAll('[data-difficulty]');
+  const modeButtons = document.querySelectorAll('[data-mode]');
+  const mapButtons = document.querySelectorAll('[data-map]');
+  const mapSelector = document.getElementById('mapSelectorRow');
   
   const activePowerupContainer = document.getElementById('activePowerupContainer');
   const activePowerupIcon = document.getElementById('activePowerupIcon');

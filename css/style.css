@@ -323,8 +323,58 @@ body {
   line-height: 1.2;
 }
 
-.map-button.active .map-desc {
-  opacity: 0.9;
+.compact-selector {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 6px;
+  margin: 4px 0;
+}
+
+.selector-row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.selector-label {
+  font-size: 0.85rem;
+  font-weight: bold;
+  color: var(--primary-color);
+  text-shadow: 0 0 3px var(--primary-color-rgba, rgba(0, 255, 136, 0.5));
+  min-width: 40px;
+}
+
+.selector-buttons {
+  display: flex;
+  gap: 6px;
+}
+
+.compact-button {
+  padding: 4px 10px;
+  min-width: 50px;
+  font-size: 0.8rem;
+  font-weight: bold;
+  color: var(--text-color);
+  background-color: transparent;
+  border: 1.5px solid var(--primary-color);
+  border-radius: 6px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  opacity: 0.85;
+}
+
+.compact-button:hover {
+  background-color: var(--primary-color-rgba-verylight, rgba(0, 255, 136, 0.1));
+  box-shadow: 0 0 10px var(--primary-color-rgba-light, rgba(0, 255, 136, 0.3));
+  opacity: 1;
+}
+
+.compact-button.active {
+  background-color: var(--primary-color);
+  color: var(--body-bg);
+  box-shadow: 0 0 12px var(--primary-color-rgba, rgba(0, 255, 136, 0.5));
+  opacity: 1;
 }
 
 .leaderboard-section {
